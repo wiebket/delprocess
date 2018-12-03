@@ -1,5 +1,6 @@
 # South African Domestic Load Research Data Processing
 
+"""
 dlr\_data\_processing/
     src/
 		specs/
@@ -29,6 +30,7 @@ usr/documents/dlr_data_store/
 			csv
 			feather
 	features/
+"""
 
 ## About this package
 
