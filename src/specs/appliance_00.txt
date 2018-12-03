@@ -1,0 +1,22 @@
+{
+"year_range" : ["2000","2014"],
+"features" : ["fridge_freezer","geyser","heater","hotplate","iron","kettle","microwave","3_plate", "4_plate","tv","washing_machine"],
+"searchlist" : ["fridgefreezerNumber" ,"geyserNumber", "heaterNumber", "hotplateNumber", "ironNumber", "kettleNumber", "microwaveNumber", "3plateNumber", "4plateNumber", "tvNumber", "washingmachineNumber", "fridgefreezerBroken", "geyserBroken", "heaterBroken", "hotplateBroken", "ironBroken", "kettleBroken", "microwaveBroken",  "3plateBroken", "4plateBroken", "tvBroken", "washingmachineBroken"],
+"transform": {
+    "fridge_freezer" : "x['fridgefreezerNumber'] - x['fridgefreezerBroken']",
+    "geyser" : "x['geyserNumber'] - x['geyserBroken']",
+    "heater" : "x['heaterNumber'] - x['heaterBroken']",
+    "hotplate" : "x['hotplateNumber'] - x['hotplateBroken']",
+    "iron" : "x['ironNumber'] - x['ironBroken']",
+    "kettle" : "x['kettleNumber'] - x['kettleBroken']",
+    "microwave" : "x['microwaveNumber'] - x['microwaveBroken']",
+    "3_plate" : "x['3plateNumber'] - x['3plateBroken']",
+    "4_plate" : "x['4plateNumber'] - x['4plateBroken']",
+    "tv" : "x['tvNumber'] - x['tvBroken']",
+    "washing_machine" : "x['washingmachineNumber'] - x['washingmachineBroken']"
+	},
+"bins" : {},
+"labels" : {},
+"cut" : {},
+"geo" : {}
+}

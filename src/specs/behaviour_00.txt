@@ -1,0 +1,21 @@
+{
+"year_range" : ["2000","2014"],
+"features" : ["fridge_freezer_use","geyser_use","heater_use","hotplate_use","iron_use","kettle_use","microwave_use","3_plate_use", "4_plate_use", "washing_machine_use"],
+"searchlist" : ["fridgefreezerUsage", "geyserUsage", "heaterUsage", "hotplateUsage", "ironUsage", "kettleUsage", "microwaveUsage", "3plateUsage", "4plateUsage", "washingMachineUsage"],
+"transform": {
+    "fridge_freezer_use" : "x['fridgefreezerUsage']",
+    "geyser_use" : "x['geyserUsage']",
+    "heater_use" : "x['heaterUsage']",
+    "hotplate_use" : "x['hotplateUsage']",
+    "iron_use" : "x['ironUsage']",
+    "kettle_use" : "x['kettleUsage']",
+    "microwave_use" : "x['microwaveUsage']",
+    "3_plate_use" : "x['3plateUsage']",
+    "4_plate_use" : "x['4plateUsage']",
+    "washing_machine_use" : "x['washingMachineUsage']"
+	},
+"bins" : {},
+"labels" : {},
+"cut" : {},
+"geo" : {}
+}

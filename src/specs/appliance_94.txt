@@ -1,0 +1,15 @@
+{
+"year_range" : ["1994","1999"],
+"features" : ["fridge_freezer","geyser","heater","hotplate","iron","kettle","microwave","3_plate", "4_plate","tv","washing_machine"],
+"searchlist" : ["fridge freezer","geyser","heater","hotplate","iron","kettle","microwave","3 plate", "4 plate","tv","washing machine"],
+"transform": {
+    "fridge_freezer" : "x['fridge freezer']",
+    "3_plate" : "x['3 plate']",
+    "4_plate" : "x['4 plate']",
+    "washing_machine" : "x['washing machine']"
+    },
+"bins" : {},
+"labels" : {},
+"cut" : {},
+"geo" : {}
+}
