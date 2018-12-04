@@ -16,7 +16,7 @@ from glob import glob
 import json
 import feather
 
-from support import feature_dir, fdata_dir, InputError, writeLog, validYears, table_dir
+from support import fdata_dir, data_dir, table_dir, InputError, validYears, wrtiteLog
 
 import shapefile as shp
 from shapely.geometry import Point
@@ -370,7 +370,7 @@ def generateSociosSetMulti(spec_files, year_start=1994, year_end=2014):
                 gg = gg.append(generateSociosSetSingle(year, spec))
             except Exception:
                 ## TODO this should be logged
-                print('Could not extract features for ' + str(year) + ' with spec ' + spec)
+                print('Could not extract features for '+str(year)+' with spec '+spec)
             pass
         ff = ff.merge(gg, left_index=True, right_index=True, how='outer')
         del gg #clear memory
@@ -399,7 +399,7 @@ def genS(spec_files, year_start, year_end, filetype='csv'):
         
     #Save data to disk
     root_name = '_'.join(spec_files)
-    file_name =  root_name + '_' + str(year_start) + '+'+ str(year_end-year_start) + '.' + filetype
+    file_name =  root_name+'_'+str(year_start)+'+'+str(year_end-year_start)+'.'+filetype
     dir_path = os.path.join(fdata_dir, root_name)
     os.makedirs(dir_path , exist_ok=True)
     file_path = os.path.join(dir_path, file_name)
@@ -418,10 +418,10 @@ def genS(spec_files, year_start, year_end, filetype='csv'):
         message = 'Success!'
         if filetype == 'feather':
             feather.write_dataframe(evidence.reset_index(), file_path)
-            print('Success! Saved to data/feature_data/' + root_name + '/' + file_name)
+            print('Success! Saved to data/feature_data/'+root_name+'/'+file_name)
         elif filetype == 'csv':
             evidence.to_csv(file_path)
-            print('Success! Saved to data/feature_data/' + root_name + '/' + file_name)
+            print('Success! Saved to data/feature_data/'+root_name+'/'+file_name)
         else:
             status = 0
             message = 'Cannot save to specified file type'

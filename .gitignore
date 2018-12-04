@@ -101,7 +101,8 @@ ENV/
 .mypy_cache/
 
 # data
-/data/*.txt
+src/data/*
+!src/data/*.csv
 
 # other
 .DS_Store

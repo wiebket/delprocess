@@ -19,7 +19,7 @@ offline.init_notebook_mode(connected=True)
 
 from support import rawprofiles_dir, profiles_dir, writeLog, validYears
 
-def shapeProfiles(year, unit, dir_name):
+def shapeProfiles(year, unit, dir_name, filetype='feather'):
     """
     This function reshapes a year's unit profiles into a dataframe indexed by date, with profile IDs as columns and units read as values.
     annualunitprofile variable should be a pandas data frame constructed with the loadProfiles() function.
@@ -28,7 +28,7 @@ def shapeProfiles(year, unit, dir_name):
     The function returns [shaped_profile_df, year, unit]; a tuple containing the shaped dataframe indexed by hour with aggregated unit values for all profiles, the year and unit concerned.
     
     """
-    data = loadProfiles(year, unit, dir_name)
+    data = loadProfiles(year, unit, dir_name, filetype='feather')
     
     data.loc[(data.Unitsread.notnull())&(data.Valid != 1), 'Unitsread'] = np.nan
     data.ProfileID = data.ProfileID.astype(str)

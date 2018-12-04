@@ -16,7 +16,7 @@ from glob import glob
 import os
 
 import surveys 
-from support import InputError, profiles_dir, validYears, data_dir
+from support import rawprofiles_dir, InputError, profiles_dir, validYears, data_dir
 
 def loadRawProfiles(year, unit):
     """
@@ -65,9 +65,10 @@ def reduceRawProfiles(year, unit, interval):
        
     return aggts
 
-def saveReducedProfiles(yearstart, yearend, interval):
+def saveReducedProfiles(yearstart, yearend, interval, filetype='feather'):
     """
-    This function iterates through profile units, reduces all profiles with reduceRawProfiles() and saves the result as a feather object in a directory tree.
+    This function iterates through profile units, reduces all profiles with 
+    reduceRawProfiles() and saves the result as a feather object in a directory tree.
     
     """ 
     for year in range(yearstart, yearend + 1):   
@@ -79,13 +80,18 @@ def saveReducedProfiles(yearstart, yearend, interval):
             dir_path = os.path.join(profiles_dir, interval, unit)
             os.makedirs(dir_path, exist_ok=True)
             
-            #write to reduced data to file
+            ts = reduceRawProfiles(year, unit, interval)
+            wpath = os.path.join(dir_path, str(year) + '_' + unit + '.'+filetype)
+
+            #write to reduced data to file            
             try:
-                ts = reduceRawProfiles(year, unit, interval)
-                wpath = os.path.join(dir_path, str(year) + '_' + unit + '.feather')
-                feather.write_dataframe(ts, wpath)
+                if filetype=='feather':
+                    feather.write_dataframe(ts, wpath)
+                elif filetype=='csv':
+                    ts.to_csv(wpath)
                 print('Write success')
-            except:
+            except Exception as e:
+                print(e)
                 pass
                 #TODO: print error to log
     
@@ -95,16 +101,23 @@ def saveReducedProfiles(yearstart, yearend, interval):
 
     return
 
-def loadProfiles(year, unit, dir_name):
+def loadProfiles(year, unit, dir_name, filetype):
     """
-    This function loads a year's unit profiles from the dir_name in profiles directory into a dataframe and returns it together with the year and unit concerned.
+    This function loads a year's unit profiles from the dir_name in profiles 
+    directory into a dataframe and returns it together with the year and unit concerned.
     
     """
     validYears(year) #check if year input is valid
     
+    file_path = os.path.join(profiles_dir, dir_name, unit,
+                             str(year)+'_'+unit+'.'+filetype)
+    
     #load data
-    data = feather.read_dataframe(os.path.join(profiles_dir, dir_name, unit,
-                                               str(year)+'_'+unit+'.feather'))
+    try:
+        data = feather.read_dataframe()
+    except:
+        data = pd.read_csv(file_path)
+
     data.drop_duplicates(inplace=True)
     
     return data
