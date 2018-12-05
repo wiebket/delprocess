@@ -24,7 +24,7 @@ def process_profiles():
     parser.add_option('-i', '--intervalresample', dest='interval', default='30T', type=str, help='Reduce load profiles to interval')
     parser.add_option('-s', '--startyear', dest='startyear', type=int, help='Start year for profile data retrieval')
     parser.add_option('-e', '--endyear', dest='endyear', type=int, help='End year for profile data retrieval')
-    parser.add_option('-csv', action='store_true', dest='csv', help='Format and save tables as csv files')
+    parser.add_option('-c', '--csv', action='store_true', dest='csv', help='Format and save tables as csv files')
 
     parser.set_defaults(csv=False)
 
@@ -60,9 +60,9 @@ def process_surveys():
     (options, args) = parser.parse_args()
 		
     if options.startyear is None:
-        options.startyear = int(input('Enter observation start year: '))
+        options.startyear = int(input('Enter survey start year: '))
     if options.endyear is None:
-        options.endyear = int(input('Enter observation end year: '))
+        options.endyear = int(input('Enter survey end year: '))
     if options.feather == False:
         filetype = 'csv'
     else:

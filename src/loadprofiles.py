@@ -16,7 +16,7 @@ from glob import glob
 import os
 
 import surveys 
-from support import rawprofiles_dir, InputError, profiles_dir, validYears, data_dir
+from support import rawprofiles_dir, InputError, profiles_dir, validYears
 
 def loadRawProfiles(year, unit):
     """

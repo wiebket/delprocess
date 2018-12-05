@@ -7,61 +7,77 @@ Support functions for the src module
 
 import os
 from pathlib import Path
-import shelve
 import datetime as dt
 
-def specifyDataDir(self):
+def specifyDataDir():
     """
     This function searches for the raw profiles and table data directories. 
-    If it cannot find the directories, it checks data/.store_path to see if path
-    variables have been specified previously. 
+    If it cannot find the directories in their default locations, it checks 
+    src/data/store_path.txt to see if path variables have been specified previously. 
     """
     
     #read line from data/store_path.txt file
     home_dir = Path.home()
-    data_dir = os.path.join(home_dir, 'dlr_data')
-    obs_dir = os.path.join(data_dir, 'observations')
-    profiles_dir = os.path.join(obs_dir, 'profiles')
-    rawprofiles_dir = os.path.join(profiles_dir, 'raw')
+    rawprofiles_dir = os.path.join(home_dir,'dlr_data','observations','profiles','raw')
+    table_dir = os.path.join(home_dir,'dlr_data','observations','tables')
     
-    if os.path.isdir(rawprofiles_dir):
-        self.home = home_dir
-        self.data = data_dir
-        self.observations = obs_dir
-        self.profiles = profiles_dir
-        self.rawprofiles = rawprofiles_dir
-    else:
-        try:
-            shelfFile = shelve.open('data/.store_path')
-            self.rawprofiles = shelfFile['rawprofiles'] 
-            
-        except KeyError:
-            self.rawprofiles = input('Paste the path to your 5min load profile data. \n')
-            shelfFile['rawprofiles'] = self.rawprofiles
-            #write rawprofiles dir to file
+    dirs = {'rawprofiles':rawprofiles_dir, 'tables':table_dir}
 
-        self.profiles = os.path.dirname(self.rawprofiles)
-        self.observations = os.path.dirname(self.profiles)
-        self.data = os.path.dirname(self.observations)
-        self.home = os.path.dirname(self.data)
-    
-    table_dir = os.path.join(obs_dir, 'tables')
-    if os.path.isdir(table_dir):
-        self.tables = table_dir
-    else:
-        try:
+    for k, v in dirs.items():
+        if os.path.isdir(v):
+            mydir = v
+            print('Your stored {} path is {} .\n'.format(k, mydir))
+        else:
+            try:
+                filepaths = {}
+                with open('data/store_path.txt') as f:
+                    for line in f:
+                        try:
+                            k, v = line.split(',')
+                            filepaths[k] = v.strip()
+                        except:
+                            pass
+
+                mydir = filepaths[k]
+                validdir = os.path.isdir(mydir)
+                if validdir is False:
+                    print('Your stored {} data path is invalid.'.format(k))
+                    raise 
+                else:
+                    print('Your stored {} data path is {}.'.format(k, mydir))
             
-        except:
-            table_dir = input('Paste the path to your table data.')
-    return
+            except:
+                while True:
+                    mydir = input('Paste the path to your {} data.\n'.format(k))
+                    validdir = os.path.isdir(mydir)
+                    
+                    if validdir is False:
+                        print('This is not a directory. Try again.')
+                        continue
+                    if validdir is True:
+                        break
+        dirs[k] = mydir
+        
+    #write rawprofiles dir to file   
+    f = open('data/store_path.txt','w')
+    for i in dirs.items():
+        f.write(','.join(i)+'\n')
+    f.close()
+    
+    print('\nYou can change your data paths in src/data/store_path.txt')
+    
+    return dirs['rawprofiles'], dirs['tables']
 
 #Data structure
-home_dir = specifyDataDir().home
-data_dir = specifyDataDir().data
-obs_dir = specifyDataDir().observations
-table_dir = specifyDataDir().tables
-profiles_dir = specifyDataDir().profiles
-rawprofiles_dir = specifyDataDir().rawprofiles
+
+data_dirs = specifyDataDir()
+
+rawprofiles_dir = data_dirs[0]
+table_dir = data_dirs[1]
+profiles_dir = os.path.dirname(rawprofiles_dir)
+obs_dir = os.path.dirname(profiles_dir)
+data_dir = os.path.dirname(obs_dir)
+home_dir = os.path.dirname(data_dir)
 fdata_dir = os.path.join(data_dir, 'features')
 
 
@@ -103,3 +119,9 @@ def writeLog(log_line, file_name):
         log_line.to_csv(log_path, mode='w', columns = log_line.columns, index=False)
         print('Log file created and log entries added to log/' + file_name + '.csv\n')    
     return log_line
+
+
+#if __name__ ==" __main__":
+    #specifyDataDir()
+    #print(rawprofiles_dir, table_dir, fdata_dir)
+    
