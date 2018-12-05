@@ -15,8 +15,8 @@ from pathlib import Path
 from glob import glob
 import os
 
-import surveys 
-from support import rawprofiles_dir, InputError, profiles_dir, validYears
+from .surveys import loadID, loadTable
+from .support import rawprofiles_dir, InputError, profiles_dir, validYears
 
 def loadRawProfiles(year, unit):
     """
@@ -169,7 +169,7 @@ def aggTs(year, unit, interval, mean=True, dir_name='H'):
 
     tf.reset_index(inplace=True)
 
-    ids = surveys.loadID()
+    ids = loadID()
     result = tf.merge(ids, on='ProfileID', how='left')    
     result = result[list(tf.columns)+['AnswerID']]
     
@@ -183,10 +183,10 @@ def getProfilePower(year, dir_name='H'):
     This function retrieves and computes kW and kVA readings for all profiles in a year.
     """
     #get list of ProfileIDs in variable year
-    p_id = surveys.loadID()['ProfileID']
+    p_id = loadID()['ProfileID']
     
     #get profile metadata (recorder ID, recording channel, recorder type, units of measurement)
-    profiles = surveys.loadTable('profiles')
+    profiles = loadTable('profiles')
         
     #get profile data for year
     iprofile = loadProfiles(year, 'A', dir_name)[0]    

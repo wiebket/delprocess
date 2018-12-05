@@ -30,7 +30,7 @@ def specifyDataDir():
         else:
             try:
                 filepaths = {}
-                with open('data/store_path.txt') as f:
+                with open('src/data/store_path.txt') as f:
                     for line in f:
                         try:
                             k, v = line.split(',')
@@ -59,7 +59,7 @@ def specifyDataDir():
         dirs[k] = mydir
         
     #write rawprofiles dir to file   
-    f = open('data/store_path.txt','w')
+    f = open('src/data/store_path.txt','w')
     for i in dirs.items():
         f.write(','.join(i)+'\n')
     f.close()

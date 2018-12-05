@@ -20,8 +20,8 @@ setup(
       author_email='wiebke.toussaint@gmail.com',
       packages=find_packages(),
       license='CC-BY-NC',
-      install_requires=['pandas','numpy','pyodbc','feather','os','glob','plotly', 
-                        'optparse', 'pathlib' 'json'],
+      install_requires=['pandas','numpy','pyodbc','feather-format','plotly', 
+                        'pathlib','pyshp','shapely'],#, 'optparse', 'json','os','glob' ],
       include_package_data=True,
       entry_points = {
 			'console_scripts': ['dlr_process_profiles=src.command_line:process_profiles', 'dlr_process_surveys=src.command_line:process_surveys'],

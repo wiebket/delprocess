@@ -7,17 +7,13 @@ Created on Wed Nov  1 17:55:45 2017
 """
 
 import numpy as np
-import pandas as pd
-import feather
-from glob import glob
-import os
 
 import plotly as py
 from plotly.offline import offline
 import plotly.graph_objs as go
 offline.init_notebook_mode(connected=True)
 
-from support import rawprofiles_dir, profiles_dir, writeLog, validYears
+from .loadprofiles import loadProfiles
 
 def shapeProfiles(year, unit, dir_name, filetype='feather'):
     """

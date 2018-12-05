@@ -16,7 +16,7 @@ from glob import glob
 import json
 import feather
 
-from support import fdata_dir, data_dir, table_dir, InputError, validYears, wrtiteLog
+from .support import fdata_dir, data_dir, table_dir, InputError, validYears#, wrtiteLog
 
 import shapefile as shp
 from shapely.geometry import Point

@@ -10,8 +10,8 @@ This is a shell script for processing observations from South Africa's Domestic 
 
 import optparse
 
-from surveys import genS
-from loadprofiles import saveReducedProfiles
+from .surveys import genS
+from .loadprofiles import saveReducedProfiles
 
 def list_callback(option, opt, value, parser):
   setattr(parser.values, option.dest, value.split(','))
@@ -52,7 +52,7 @@ def process_surveys():
     
     parser.add_option('-s', '--startyear', dest='startyear', type=int, help='Start year for profile data retrieval')
     parser.add_option('-e', '--endyear', dest='endyear', type=int, help='End year for profile data retrieval')
-    parser.add_option('-feather', action='store_true', dest='csv', help='Format and save tables as csv files')
+    parser.add_option('--feather', action='store_true', dest='csv', help='Format and save tables as csv files')
     parser.add_option('-f', '--specfiles', dest='specfiles', action='callback', callback=list_callback, help='Feature specification file name(s)')
 
     parser.set_defaults(feather=False)
