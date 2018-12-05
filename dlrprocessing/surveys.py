@@ -51,8 +51,6 @@ def geoMeta():
     site_geo = site_geo[['GPSName','Lat','Long','Province','Municipality','District']].drop_duplicates()
     site_geo.to_csv(os.path.join(data_dir, 'obs_datasets', 'geo_meta', 'site_geo.csv'), index=False)
     
-    
-    
 #    #add geographic metadata: lat, long municipality, district, province
 # USE WITH getGroups    
     
@@ -281,7 +279,7 @@ def generateSociosSetSingle(year, spec_file, set_id='ProfileID'):
     
     """
     #Get feature specficiations
-    files = glob(os.path.join(feature_dir, 'specification', spec_file + '*.txt'))
+    files = glob(os.path.join('specs', spec_file + '*.txt'))
 
     for file_path in files:
         try:
@@ -394,6 +392,7 @@ def genS(spec_files, year_start, year_end, filetype='csv'):
 
     if isinstance(spec_files, list):
         pass
+    
     else:
         spec_files = [spec_files]
         

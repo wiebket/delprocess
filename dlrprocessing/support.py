@@ -18,6 +18,9 @@ def specifyDataDir():
     
     #read line from data/store_path.txt file
     home_dir = Path.home()
+    usr_dir = os.path.join(home_dir, 'dlr_data','usr')
+    os.makedirs(usr_dir, exist_ok=True)
+
     rawprofiles_dir = os.path.join(home_dir,'dlr_data','observations','profiles','raw')
     table_dir = os.path.join(home_dir,'dlr_data','observations','tables')
     
@@ -30,11 +33,11 @@ def specifyDataDir():
         else:
             try:
                 filepaths = {}
-                with open('src/data/store_path.txt') as f:
+                with open(os.path.join(usr_dir,'store_path.txt')) as f:
                     for line in f:
                         try:
-                            k, v = line.split(',')
-                            filepaths[k] = v.strip()
+                            i, j = line.split(',')
+                            filepaths[i] = j.strip()
                         except:
                             pass
 
@@ -59,12 +62,12 @@ def specifyDataDir():
         dirs[k] = mydir
         
     #write rawprofiles dir to file   
-    f = open('src/data/store_path.txt','w')
+    f = open(os.path.join(usr_dir,'store_path.txt'),'w')
     for i in dirs.items():
-        f.write(','.join(i)+'\n')
+        f.write(', '.join(i)+'\n')
     f.close()
     
-    print('\nYou can change your data paths in src/data/store_path.txt')
+    print('\nYou can change your data paths in /your_home_directory/dlr_data/usr/store_path.txt')
     
     return dirs['rawprofiles'], dirs['tables']
 

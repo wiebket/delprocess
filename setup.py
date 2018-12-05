@@ -24,6 +24,6 @@ setup(
                         'pathlib','pyshp','shapely'],#, 'optparse', 'json','os','glob' ],
       include_package_data=True,
       entry_points = {
-			'console_scripts': ['dlr_process_profiles=src.command_line:process_profiles', 'dlr_process_surveys=src.command_line:process_surveys'],
+			'console_scripts': ['dlr_process_profiles=dlrprocessing.command_line:process_profiles', 'dlr_process_surveys=dlrprocessing.command_line:process_surveys'],
     		}
       )
