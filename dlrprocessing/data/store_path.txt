@@ -1,2 +1,0 @@
-rawprofiles,/home/saintlyvi/dlr_data/observations/profiles/raw
-tables,/home/saintlyvi/git/DLR/dlrprocessing/src

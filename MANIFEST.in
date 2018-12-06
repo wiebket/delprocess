@@ -1,2 +1,2 @@
-include /src/anonymise/*.csv
-include /src/cnxnstr.txt
+include src/data/geometa/*
+include src/data/geometa/2016_Boundaries_Local/*
