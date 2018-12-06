@@ -1,0 +1,22 @@
+{
+"year_range" : ["2000","2014"],
+"features" : ["fridge_freezer_broken","geyser_broken","heater_broken","hotplate_broken","iron_broken","kettle_broken","microwave_broken","3_plate_broken", "4_plate_broken","tv_broken","washing_machine_broken"],
+"searchlist" : ["fridgefreezerBroken", "geyserBroken", "heaterBroken", "hotplateBroken", "ironBroken", "kettleBroken", "microwaveBroken",  "3plateBroken", "4plateBroken", "tvBroken", "washingmachineBroken"],
+"transform": {
+    "fridge_freezer_broken" : "x['fridgefreezerBroken']",
+    "geyser_broken" : "x['geyserBroken']",
+    "heater_broken" : "x['heaterBroken']",
+    "hotplate_broken" : "x['hotplateBroken']",
+    "iron_broken" : "x['ironBroken']",
+    "kettle_broken" : "x['kettleBroken']",
+    "microwave_broken" : "x['microwaveBroken']",
+    "3_plate_broken" : "x['3plateBroken']",
+    "4_plate_broken" : "x['4plateBroken']",
+    "tv_broken" : "x['tvBroken']",
+    "washing_machine_broken" : "x['washingmachineBroken']"
+	},
+"bins" : {},
+"labels" : {},
+"cut" : {},
+"geo" : {}
+}

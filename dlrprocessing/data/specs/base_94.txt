@@ -1,0 +1,24 @@
+{
+"year_range" : ["1994","1999"],
+"features" : ["monthly_income", "water_access", "roof_material", "wall_material", "cb_size", "floor_area"],
+"searchlist" : ["income", "watersource", "roof", "wall", "main switch", "floor area"],
+"transform": {
+	"monthly_income" : "x['income']",
+	"water_access" : "4 - x['watersource']",
+	"roof_material" : "x['roof']+1",
+	"wall_material" : "x['wall']+1",
+	"cb_size" : "x['main switch']",
+	"floor_area" : "x['floor area']"
+	},
+"bins" : {
+    	"monthly_income" : ["0", "1800", "3200", "7800", "11600", "19116", "24500", "65600", "500000"], "floor_area" : ["0", "50", "80", "150", "250", "500"]
+         },
+"labels" : {
+    	"monthly_income" : ["R0-R1799","R1800-R3199","R3200-R7799","R7800-R11599","R11600-R19115","R19116-R24499","R24500-R65499","+R65500"],
+    "floor_area" : ["0-50", "50-80", "80-150", "150-250", "250-500"]
+        },
+"cut" : {
+	"monthly_income":{"right":"False", "include_lowest":"True"}
+	},
+"geo" : "District"
+}
