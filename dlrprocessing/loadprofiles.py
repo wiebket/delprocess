@@ -14,6 +14,7 @@ import feather
 from pathlib import Path
 from glob import glob
 import os
+import gc
 
 from .surveys import loadID, loadTable
 from .support import rawprofiles_dir, InputError, profiles_dir, validYears
@@ -65,13 +66,16 @@ def reduceRawProfiles(year, unit, interval):
     The data is structured as dict[unit:{year:[list_of_profile_ts]}]
     
     """
+    gc.collect() #clear any memory garbage
     ts = loadRawProfiles(year, unit)
     
     if ts is None:
         return print('No profiles for {} {}'.format(year, unit))
     else:
+        ts.sort_values(by=['RecorderID', 'ProfileID','Datefield'], inplace=True)
+        ts.reset_index(inplace=True)
         aggts = ts.groupby(['RecorderID', 'ProfileID']).resample(interval, on='Datefield').mean()
-            
+        aggts.dropna(inplace=True)    #resampling creates lots of nan values
         del ts #free memory
         
         aggts = aggts.loc[:, ['Unitsread', 'Valid']]
@@ -89,7 +93,8 @@ def saveReducedProfiles(year, interval, filetype='feather'):
     
     """ 
     for unit in ['A', 'V', 'kVA', 'Hz', 'kW']:
-            
+        gc.collect() #clear any memory garbage
+        
         dir_path = os.path.join(profiles_dir, interval, unit)
         os.makedirs(dir_path, exist_ok=True)
         
@@ -520,6 +525,7 @@ def genX(year_range, drop_0=False, **kwargs):
     if 'filetype' in kwargs: filetype = kwargs['filetype']
     else: filetype = 'feather'
     
+    gc.collect()
    
     try:
         xpath = glob(os.path.join(profiles_dir, 'X', str(year_range[0])+'_'+
