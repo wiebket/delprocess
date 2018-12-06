@@ -20,5 +20,39 @@
 "cut" : {
 	"monthly_income":{"right":"False", "include_lowest":"True"}
 	},
+"replace" : {
+    	"water_access": {
+		"1":"nearby river/dam/borehole", 
+		"2":"block/street taps", 
+		"3":"tap in yard", 
+		"4":"tap inside house"
+		},
+	"roof_material": {
+        	"1":"IBR/Corr.Iron/Zinc", 
+        "2":"Thatch/Grass", 
+        	"3":"Wood/Masonite board", 
+		"4":"Brick", 
+		"5":"Blocks", 
+		"6":"Plaster", 
+		"7":"Concrete", 
+		"8":"Tiles", 
+        	"9":"Plastic", 
+        	"10":"Asbestos", 
+        "11":"Daub/Mud/Clay"
+        	},
+	"wall_material": {
+		"1":"IBR/Corr.Iron/Zinc", 
+		"2":"Thatch/Grass", 
+		"3":"Wood/Masonite board", 
+		"4":"Brick", 
+        	"5":"Blocks", 
+        	"6":"Plaster", 
+        "7":"Concrete", 
+        	"8":"Tiles", 
+        	"9":"Plastic", 
+		"10":"Asbestos", 
+		"11":"Daub/Mud/Clay"
+		}
+    	},
 "geo" : "District"
 }

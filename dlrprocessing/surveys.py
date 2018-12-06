@@ -18,17 +18,6 @@ import feather
 
 from .support import usr_dir, fdata_dir, table_dir, InputError, validYears, geoMeta#, wrtiteLog
    
-#    #add geographic metadata: lat, long municipality, district, province
-# USE WITH getGroups    
-    
-#    try:
-#        geo_meta = pd.read_csv(os.path.join('data', 'geo_meta', 'site_geo.csv'))
-#    except:
-#        geoMeta()
-#        geo_meta = pd.read_csv(os.path.join(data', 'geo_meta', 'site_geo.csv'))
-#        
-#    output = allgroups.merge(geo_meta[['GPSName','Lat','Long','Province','Municipality','District']], left_on='LocName', right_on='GPSName', how='left')
-#    output.drop(labels='GPSName', axis=1, inplace=True)
 
 def loadTable(name, query=None, columns=None):
     """
@@ -54,6 +43,7 @@ def loadID():
     """
     This function subsets Answer or Profile IDs by year. Tables variable can be constructred with loadTables() function. Year input can be number or string. id_name is AnswerID or ProfileID. 
     """
+    thisdir = os.path.dirname(__file__)
     groups = loadTable('groups')
     links = loadTable('links')
     profiles = loadTable('profiles')
@@ -75,8 +65,19 @@ def loadID():
     all_ids.AnswerID.fillna(0, inplace=True)
     all_ids.AnswerID = all_ids.AnswerID.astype(int)
     all_ids.ProfileID = all_ids.ProfileID.astype(int)
+
+    try:
+        geo_meta = pd.read_csv(os.path.join(thisdir,'data', 'geometa', 'site_geo.csv'))
+    except:
+        geoMeta()
+        geo_meta = pd.read_csv(os.path.join(thisdir,'data', 'geometa', 'site_geo.csv'))
+
+    output = all_ids.merge(geo_meta[['GPSName','Lat','Long','Province','Municipality',
+                                     'District']], left_on='LocName', right_on='GPSName', how='left')
+    output.drop(labels='GPSName', axis=1, inplace=True)
         
     return all_ids
+
 
 def idsDuplicates():
     ids = loadID()
@@ -188,6 +189,7 @@ def searchAnswers(search):
             result = result.merge(df, how='outer')
             
     return result
+
 
 def extractSocios(searchlist, year=None, col_names=None, geo=None):
     """
@@ -395,7 +397,8 @@ def genS(spec_files, year_start, year_end, filetype='csv'):
             message = 'Cannot save to specified file type'
             print(message)
     
-    		#TODO save errors to logs
+    		#TODO errors are a MESS! 
+            #save errors to logs
 		    #l = ['featureExtraction', year_start, year_end, status, message, spec_files, file_name]
 		    #loglines.append(l)            
 		    #logs = pd.DataFrame(loglines, columns = ['process','from year','to year','status','message','features', 'output_file'])

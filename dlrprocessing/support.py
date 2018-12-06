@@ -184,9 +184,10 @@ def geoMeta():
     Lat, Long co-ords with municipal boundaries dataset.
     """
     # SHP, DBF and SHX files from http://energydata.uct.ac.za/dataset/2016-municipal-boundaries-south-africa
-    munic2016 = os.path.join('data', 'geo_meta', '2016-Boundaries-Local',
+    thisdir = os.path.dirname(__file__)
+    munic2016 = os.path.join(thisdir, 'data', 'geometa', '2016-Boundaries-Local',
                              'Local_Municipalities_2016') 
-    site_ref = pd.read_csv(os.path.join('data', 'geo_meta', 
+    site_ref = pd.read_csv(os.path.join(thisdir, 'data', 'geometa', 
                                         'DLR Site coordinates.csv'))
     
     sf = shp.Reader(munic2016)
@@ -206,7 +207,7 @@ def geoMeta():
     
     site_geo = pd.concat([site_ref, geo_meta], axis = 1)
     site_geo = site_geo[['GPSName','Lat','Long','Province','Municipality','District']].drop_duplicates()
-    site_geo.to_csv(os.path.join('data', 'geo_meta', 'site_geo.csv'), index=False)
+    site_geo.to_csv(os.path.join(thisdir,'data', 'geometa', 'site_geo.csv'), index=False)
 
 #if __name__ ==" __main__":
     #specifyDataDir()

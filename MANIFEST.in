@@ -1,2 +1,2 @@
-include src/data/geometa/*
-include src/data/geometa/2016_Boundaries_Local/*
+include dlrprocessing/data/geometa/*
+include dlrprocessing/data/geometa/2016_Boundaries_Local/*
