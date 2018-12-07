@@ -72,6 +72,10 @@ def reduceRawProfiles(year, unit, interval):
     if ts is None:
         return print('No profiles for {} {}'.format(year, unit))
     else:
+        
+        #ts_sorted = ts.set_index(['RecorderID','ProfileID','Datefield']).sort_index()
+        #ts = ts.sort_values(by=['RecorderID', 'ProfileID','Datefield']).reset_index(drop=True)
+        
         ts.sort_values(by=['RecorderID', 'ProfileID','Datefield'], inplace=True)
         ts.reset_index(inplace=True)
         aggts = ts.groupby(['RecorderID', 'ProfileID']).resample(interval, on='Datefield').mean()
