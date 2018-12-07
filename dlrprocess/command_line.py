@@ -22,9 +22,9 @@ def process_profiles():
     """
     parser = optparse.OptionParser()
     parser.add_option('-i', '--intervalresample', dest='interval', default='30T', type=str, help='Reduce load profiles to interval')
-    parser.add_option('-s', '--startyear', dest='startyear', type=int, help='Start year for profile data retrieval')
-    parser.add_option('-e', '--endyear', dest='endyear', type=int, help='End year for profile data retrieval')
-    parser.add_option('-c', '--csv', action='store_true', dest='csv', help='Format and save tables as csv files')
+    parser.add_option('-s', '--startyear', dest='startyear', type=int, help='Data start year')
+    parser.add_option('-e', '--endyear', dest='endyear', type=int, help='Data end year')
+    parser.add_option('-c', '--csv', action='store_true', dest='csv', help='Format and save output as csv files')
     parser.set_defaults(csv=False)
 
     (options, args) = parser.parse_args()
@@ -51,9 +51,9 @@ def process_surveys():
     """
 
     parser = optparse.OptionParser()
-    parser.add_option('-s', '--startyear', dest='startyear', type=int, help='Start year for profile data retrieval')
-    parser.add_option('-e', '--endyear', dest='endyear', type=int, help='End year for profile data retrieval')
-    parser.add_option('--feather', action='store_true', dest='csv', help='Format and save tables as csv files')
+    parser.add_option('-s', '--startyear', dest='startyear', type=int, help='Data start year')
+    parser.add_option('-e', '--endyear', dest='endyear', type=int, help='Data end year')
+    parser.add_option('--feather', action='store_true', dest='csv', help='Format and save output as feather files')
     parser.add_option('-f', '--specfiles', dest='specfiles', action='callback', callback=list_callback, 
                       help='Feature specification file name(s)')
     parser.set_defaults(feather=False)

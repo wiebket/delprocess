@@ -43,7 +43,7 @@ def loadID():
     """
     This function subsets Answer or Profile IDs by year. Tables variable can be constructred with loadTables() function. Year input can be number or string. id_name is AnswerID or ProfileID. 
     """
-    thisdir = os.path.dirname(__file__)
+    this_dir = os.path.dirname(__file__)
     groups = loadTable('groups')
     links = loadTable('links')
     profiles = loadTable('profiles')
@@ -67,10 +67,10 @@ def loadID():
     all_ids.ProfileID = all_ids.ProfileID.astype(int)
 
     try:
-        geo_meta = pd.read_csv(os.path.join(thisdir,'data', 'geometa', 'site_geo.csv'))
+        geo_meta = pd.read_csv(os.path.join(this_dir,'data', 'geometa', 'site_geo.csv'))
     except:
         geoMeta()
-        geo_meta = pd.read_csv(os.path.join(thisdir,'data', 'geometa', 'site_geo.csv'))
+        geo_meta = pd.read_csv(os.path.join(this_dir,'data', 'geometa', 'site_geo.csv'))
 
     output = all_ids.merge(geo_meta[['GPSName','Lat','Long','Province','Municipality',
                                      'District']], left_on='LocName', right_on='GPSName', how='left')

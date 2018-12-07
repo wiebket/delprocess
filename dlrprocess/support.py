@@ -128,8 +128,8 @@ table_dir = usr_data[1]
 rawprofiles_dir = os.path.join(profiles_dir, 'raw')
 obs_dir = os.path.dirname(profiles_dir)
 data_dir = os.path.dirname(obs_dir)
-fdata_dir = os.path.join(os.path.dirname(usr_dir), 'features')
-
+fdata_dir = os.path.join(os.path.dirname(usr_dir), 'survey_features')
+pdata_dir = os.path.join(os.path.dirname(usr_dir), 'resampled_profiles')
 
 class InputError(ValueError):
     """
@@ -184,10 +184,10 @@ def geoMeta():
     Lat, Long co-ords with municipal boundaries dataset.
     """
     # SHP, DBF and SHX files from http://energydata.uct.ac.za/dataset/2016-municipal-boundaries-south-africa
-    thisdir = os.path.dirname(__file__)
-    munic2016 = os.path.join(thisdir, 'data', 'geometa', '2016-Boundaries-Local',
+    this_dir = os.path.dirname(__file__)
+    munic2016 = os.path.join(this_dir, 'data', 'geometa', '2016-Boundaries-Local',
                              'Local_Municipalities_2016') 
-    site_ref = pd.read_csv(os.path.join(thisdir, 'data', 'geometa', 
+    site_ref = pd.read_csv(os.path.join(this_dir, 'data', 'geometa', 
                                         'DLR Site coordinates.csv'))
     
     sf = shp.Reader(munic2016)
@@ -207,7 +207,7 @@ def geoMeta():
     
     site_geo = pd.concat([site_ref, geo_meta], axis = 1)
     site_geo = site_geo[['GPSName','Lat','Long','Province','Municipality','District']].drop_duplicates()
-    site_geo.to_csv(os.path.join(thisdir,'data', 'geometa', 'site_geo.csv'), index=False)
+    site_geo.to_csv(os.path.join(this_dir,'data', 'geometa', 'site_geo.csv'), index=False)
 
 #if __name__ ==" __main__":
     #specifyDataDir()

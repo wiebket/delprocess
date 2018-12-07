@@ -17,7 +17,7 @@ import os
 import gc
 
 from .surveys import loadID, loadTable
-from .support import rawprofiles_dir, InputError, profiles_dir, validYears
+from .support import rawprofiles_dir,  pdata_dir, InputError, validYears
 
 def loadRawProfiles(year, unit):
     """
@@ -99,7 +99,7 @@ def saveReducedProfiles(year, interval, filetype='feather'):
     for unit in ['A', 'V', 'kVA', 'Hz', 'kW']:
         gc.collect() #clear any memory garbage
         
-        dir_path = os.path.join(profiles_dir, interval, unit)
+        dir_path = os.path.join(pdata_dir, interval, unit)
         os.makedirs(dir_path, exist_ok=True)
         
         ts = reduceRawProfiles(year, unit, interval)
@@ -137,7 +137,7 @@ def loadReducedProfiles(year, unit, interval):
     while file_path is None:
         try:
              #load profiles
-            file_path = glob(os.path.join(profiles_dir, interval, unit,
+            file_path = glob(os.path.join(pdata_dir, interval, unit,
                                  str(year)+'_'+unit+'.*'))[-1]
             
         except IndexError: #index error indicates file does not exist
@@ -387,7 +387,7 @@ def generateAggProfiles(year, interval='M'):
     feather_path= {}
     csv_path= {}
     for i in ['pp', 'aggpp_' + interval, 'a' + interval + 'd', 'adtd']: 
-        ipath = os.path.join(profiles_dir, 'aggProfiles', i)
+        ipath = os.path.join(pdata_dir, 'aggProfiles', i)
         feather_path[i] = os.path.join(ipath, 'feather', i + '_' + str(year) + '.feather')
         csv_path[i] = os.path.join(ipath, 'csv', i + '_' + str(year) + '.csv')
         os.makedirs(os.path.join(ipath, 'feather'), exist_ok=True)
@@ -424,7 +424,7 @@ def readAggProfiles(year, aggfunc = 'adtd'):
     """
     validYears(year) 
     try:       
-        path = Path(os.path.join(profiles_dir, 'aggProfiles', aggfunc, 'feather'))
+        path = Path(os.path.join(pdata_dir, 'aggProfiles', aggfunc, 'feather'))
         for child in path.iterdir():
             n = child.name
             nu = n.split('.')[0].split('_')[-1]
@@ -446,7 +446,7 @@ def season(month):
 def generateSeasonADTD(year):
 
     #generate folder structure and file names    
-    path = os.path.join(profiles_dir, 'aggProfiles', 'adtd_season')
+    path = os.path.join(pdata_dir, 'aggProfiles', 'adtd_season')
     feather_path = os.path.join(path, 'feather', 'adtd_season' + '_' + str(year) + '.feather')
     csv_path = os.path.join(path, 'csv', 'adtd_season' + '_' + str(year) + '.csv')
     os.makedirs(os.path.join(path, 'feather'), exist_ok=True)
@@ -532,12 +532,12 @@ def genX(year_range, drop_0=False, **kwargs):
     gc.collect()
    
     try:
-        xpath = glob(os.path.join(profiles_dir, 'X', str(year_range[0])+'_'+
+        xpath = glob(os.path.join(pdata_dir, 'X', str(year_range[0])+'_'+
                                   str(year_range[1])+intstr+aggfunc+unit+'.*'))[-1] #check if file exists
         X = feather.read_dataframe(xpath)
         
     except IndexError:
-        xpath = os.path.join(profiles_dir, 'X', str(year_range[0])+'_'+
+        xpath = os.path.join(pdata_dir, 'X', str(year_range[0])+'_'+
                                   str(year_range[1])+intstr+aggfunc+unit+'.'+filetype)
         X = pd.DataFrame()
         
