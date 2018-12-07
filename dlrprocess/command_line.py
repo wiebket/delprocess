@@ -54,8 +54,7 @@ def process_surveys():
     parser.add_option('-s', '--startyear', dest='startyear', type=int, help='Data start year')
     parser.add_option('-e', '--endyear', dest='endyear', type=int, help='Data end year')
     parser.add_option('--feather', action='store_true', dest='csv', help='Format and save output as feather files')
-    parser.add_option('-f', '--specfiles', dest='specfiles', action='callback', callback=list_callback, 
-                      help='Feature specification file name(s)')
+    parser.add_option('-f', '--specfiles', dest='specfiles', help='Feature specification file name(s)')
     parser.set_defaults(feather=False)
     
     (options, args) = parser.parse_args()
