@@ -3,9 +3,9 @@
 ```bash
 dlrprocess
     |-- dlrprocess
-	    |-- data
-		    |-- geometa
-			    |-- 2016\_Boundaries\_Local
+        |-- data
+    	    |-- geometa
+                |-- 2016\_Boundaries\_Local
 				    |-- ...
 		    |-- specs
 		    	|-- app\_broken\_00.txt
