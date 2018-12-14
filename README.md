@@ -50,7 +50,7 @@ This package contains tools to process primary data from the South African Domes
 Ensure that python 3 is installed on your computer. A simple way of getting it is to install it with [Anaconda](https://conda.io/docs/user-guide/install/index.html). 
 
 1. Clone this repository from github.
-2. Navigate to the root directory (`dlrprocess`) and run the `setup.py` script
+2. Navigate to the root directory (`dlrprocess`) and run the `python setup.py install` script (run from Anaconda Prompt or other bash wiht access to python if running on Windows).
 3. You will be asked to confirm the data directories that contain your data. Paste the full path name when prompted. You can change this setting at a later stage by modifying the file `your_home_dir/dlr_data/usr/store_path.txt` .
 
 ## Data processing
