@@ -3,4 +3,4 @@
 
 from dlrprocess.loadprofiles import loadRawProfiles, reduceRawProfiles, loadReducedProfiles, genX
 from dlrprocess.surveys import searchQuestions, searchAnswers, genS
-from dlrprocesss.plotprofiles import nanAnalysis
+from dlrprocess.plotprofiles import nanAnalysis
