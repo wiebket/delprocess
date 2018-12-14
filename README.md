@@ -6,8 +6,8 @@ dlrprocess
         |-- data
     	    |-- geometa
                 |-- 2016\_Boundaries\_Local
-				    |-- ...
-		    |-- specs
+		    |-- ...
+		|-- specs
 		    	|-- app\_broken\_00.txt
 		    	|-- appliance_00.txt
 		    	|-- appliance_94.txt	
