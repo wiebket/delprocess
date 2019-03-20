@@ -23,13 +23,13 @@ setup(
       license='CC-BY-NC',
       install_requires=['pandas','numpy','pyodbc','feather-format','plotly', 
                         'pathlib','pyshp','shapely'],
+      include_package_data=True,
       packages=find_packages(),
       py_modules = ['dlrprocess.surveys', 'dlrprocess.loadprofiles', 
                     'dlrprocess.plotprofiles'],
       data_files=[(os.path.join(usr_dir,'specs'), [os.path.join(
                   'dlrprocess','data','specs', f) for f in [files for root, dirs, files 
                     in os.walk(os.path.join('dlrprocess','data','specs'))][0]])],
-      include_package_data=True,
       entry_points = {
 			'console_scripts': ['dlrprocess_profiles=dlrprocess.command_line:process_profiles',
                        'dlrprocess_surveys=dlrprocess.command_line:process_surveys'],

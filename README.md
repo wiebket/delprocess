@@ -24,7 +24,7 @@ dlrprocess
     |-- README.md
     |-- MANIFEST.in
 ```
-Directory hierarchy for *dlr_data* if create with package `dlrretrieve`:
+Directory hierarchy for *dlr_data* if created with package `dlrretrieve`:
 ```bash
 your\_home\_dir/dlr_data
 	|-- observations
