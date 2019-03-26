@@ -12,10 +12,10 @@ from dlrprocess.support import usr_dir
 setup(
       name='dlrprocess',
       version=0.1,
-      description='Processes local DLR data',
+      description='Processes DLR data in a local directory structure',
       long_description='This module helps researchers process and clean load profile\
-      and survey data of the Domestic Load Research database from a local directory\
-      structure. Processed data is stored on disk.',
+      and survey data from the Domestic Load Research database stored in a local \
+      directory structure. Processed data is stored on disk.',
       keywords='domestic load research south africa data processing',
       url='https://github.com/wiebket/dlrprocess',
       author='Wiebke Toussaint',

@@ -17,5 +17,67 @@
 "bins" : {},
 "labels" : {},
 "cut" : {},
+"replace" : {
+	"fridge_freezer_use": {
+		"0":"never",
+		"1":"monthly",
+		"2":"weekly",
+		"3":"daily"
+	},	
+	"geyser_use": {
+		"0":"never",
+		"1":"monthly",
+		"2":"weekly",
+		"3":"daily"
+	},
+	"heater_use": {
+		"0":"never",
+		"1":"monthly",
+		"2":"weekly",
+		"3":"daily"
+	},
+	"hotplate_use": {
+		"0":"never",
+		"1":"monthly",
+		"2":"weekly",
+		"3":"daily"
+	},
+	"iron_use": {
+		"0":"never",
+		"1":"monthly",
+		"2":"weekly",
+		"3":"daily"
+	},
+	"kettle_use": {
+		"0":"never",
+		"1":"monthly",
+		"2":"weekly",
+		"3":"daily"
+	},
+	"microwave_use": {
+		"0":"never",
+		"1":"monthly",
+		"2":"weekly",
+		"3":"daily"
+	},
+	"3_plate_use": {
+		"0":"never",
+		"1":"monthly",
+		"2":"weekly",
+		"3":"daily"
+	},
+	"4_plate_use": {
+		"0":"never",
+		"1":"monthly",
+		"2":"weekly",
+		"3":"daily"
+	},
+	"washing_machine_use": {
+		"0":"never",
+		"1":"monthly",
+		"2":"weekly",
+		"3":"daily"
+	}
+},
 "geo" : {}
 }

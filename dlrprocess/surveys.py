@@ -306,19 +306,19 @@ def generateSociosSetSingle(year, spec_file, set_id='ProfileID'):
         cpi = dict(zip(list(range(1994,2015)),cpi_percentage))
         data['monthly_income'] = data['monthly_income']/cpi[year]
     
-        #Cut columns into datatypes that match factors of BN node variables    
-        for k, v in bins.items():
-            bin_vals = [int(b) for b in v]
-            try:
-                data[k] = pd.cut(data[k], bins = bin_vals, labels = labels[k], 
-                    right=eval(cut[k]['right']), include_lowest=eval(cut[k]['include_lowest']))
-                data[k].cat.reorder_categories(labels[k], inplace=True)
-            except KeyError:
-                data[k] = pd.cut(data[k], bins = bin_vals, labels = labels[k])
+    #Cut columns into datatypes that match factors of BN node variables    
+    for k, v in bins.items():
+        bin_vals = [int(b) for b in v]
+        try:
+            data[k] = pd.cut(data[k], bins = bin_vals, labels = labels[k], 
+                right=eval(cut[k]['right']), include_lowest=eval(cut[k]['include_lowest']))
+            data[k].cat.reorder_categories(labels[k], inplace=True)
+        except KeyError:
+            data[k] = pd.cut(data[k], bins = bin_vals, labels = labels[k])
 
-        for y, z in replace.items():
-            data[y].replace([int(a) for a in z.keys()], z.values(),inplace=True)                                  
-            data[y].where(data[y]!=0, inplace=True)  
+    for y, z in replace.items():
+        data[y].replace([int(a) for a in z.keys()], z.values(),inplace=True)                                  
+        data[y].where(data[y]!=0, inplace=True)  
             
     data.set_index(set_id, inplace=True) #set ID column as index
 
@@ -349,7 +349,8 @@ def generateSociosSetMulti(spec_files, year_start=1994, year_end=2014):
         if ff[c].dtype == np.float64:
             if sum(ff[c]%1) == 0.0: #check for columns that should be integers
                 ff[c] = ff[c].astype(int)
-    
+                #TODO also check for nan
+                
     ff = ff[~ff.index.duplicated(keep='first')] #problem with profile_id 8396, answer id 2000458
     
     return ff

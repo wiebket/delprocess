@@ -1,0 +1,52 @@
+{
+"year_range" : ["1994","1999"],
+"features" : ["monthly_income", "water_access", "roof_material", "wall_material", "cb_size", "floor_area", "years_electrified"],
+"searchlist" : ["income", "watersource", "roof", "wall", "main switch", "floor area", "years"],
+"transform": {
+	"monthly_income" : "x['income']",
+	"water_access" : "4 - x['watersource']",
+	"roof_material" : "x['roof']+1",
+	"wall_material" : "x['wall']+1",
+	"cb_size" : "x['main switch']",
+	"floor_area" : "x['floor area']",
+	"years_electrified" : "x['years']"
+	},
+"bins" : {},
+"labels" : {},
+"cut" : {},
+"replace" : {
+    "water_access": {
+		"1":"nearby river/dam/borehole", 
+		"2":"block/street taps", 
+		"3":"tap in yard", 
+		"4":"tap inside house"
+		},
+	"roof_material": {
+        	"1":"IBR/Corr.Iron/Zinc", 
+        "2":"Thatch/Grass", 
+        	"3":"Wood/Masonite board", 
+		"4":"Brick", 
+		"5":"Blocks", 
+		"6":"Plaster", 
+		"7":"Concrete", 
+		"8":"Tiles", 
+        	"9":"Plastic", 
+        	"10":"Asbestos", 
+        "11":"Daub/Mud/Clay"
+        	},
+	"wall_material": {
+		"1":"IBR/Corr.Iron/Zinc", 
+		"2":"Thatch/Grass", 
+		"3":"Wood/Masonite board", 
+		"4":"Brick", 
+        	"5":"Blocks", 
+        	"6":"Plaster", 
+        "7":"Concrete", 
+        	"8":"Tiles", 
+        	"9":"Plastic", 
+		"10":"Asbestos", 
+		"11":"Daub/Mud/Clay"
+		}
+	},
+"geo" : "Municipality"
+}

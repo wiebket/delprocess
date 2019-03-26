@@ -18,5 +18,6 @@
 "bins" : {},
 "labels" : {},
 "cut" : {},
+"replace" : {},
 "geo" : {}
 }
