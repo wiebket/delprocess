@@ -390,7 +390,7 @@ def genS(spec_files, year_start, year_end, filetype='csv'):
             feather.write_dataframe(evidence.reset_index(), file_path)
             print('Success! Saved to data/feature_data/'+root_name+'/'+file_name)
         elif filetype == 'csv':
-            evidence.to_csv(file_path)
+            evidence.to_csv(file_path, index=False)
             print('Success! Saved to data/feature_data/'+root_name+'/'+file_name)
         else:
             status = 0

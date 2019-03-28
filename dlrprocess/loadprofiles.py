@@ -137,7 +137,7 @@ def saveReducedProfiles(year, interval, filetype='feather'):
                 if filetype=='feather':
                     feather.write_dataframe(ts, wpath)
                 elif filetype=='csv':
-                    ts.to_csv(wpath)
+                    ts.to_csv(wpath, index=False)
                 print('Write success')
             except Exception as e:
                 print(e)
