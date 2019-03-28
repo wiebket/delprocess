@@ -18,20 +18,43 @@ from shapely.geometry import shape
 
 home_dir = Path.home()
 usr_dir = os.path.join(home_dir, 'dlr_data','usr')
-os.makedirs(usr_dir, exist_ok=True)
+
+def getDataDir():
+    """
+    This function checks if a valid data directory has been specified in
+    USER_HOME/dlr_data/usr/store_path.txt.
+    """
+    
+    filepath = []
+    #read directory paths from store_path.txt file
+    with open(os.path.join(usr_dir,'store_path.txt')) as f:
+        for line in f:
+            try:
+                filepath.append(line.strip())
+            except:
+                pass
+    mydir = filepath[0]
+    validdir = os.path.isdir(mydir)
+    #check if directory paths exist (does not validate directory structure)
+    if validdir is False:
+        #print('Your stored {} data path is invalid.'.format(k))
+        raise 
+    else:
+        print('Your data path is \n{}'.format(mydir))
+    
+    return mydir
 
 def specifyDataDir():
     """
-    This function searches for the profiles and tables data directories in
-    the following order: 
-        1. Default locations in /your_home_directory/dlr_data/observations/...
-        2. Path variables specified previously in /your_home_directory/dlr_data/usr/store_path.txt 
-        3. User input for profiles and table data dir
+    This function searches for the profiles and tables data directories.
 
     The data in the default location must be store as follows:
     |-- your_data_dir (eg dlr_data)
         |-- observations
             |-- .... (ie profiles, tables)
+            
+    If 'raw' data has been exported from the server or retrieved with dlrretrieval, 
+    the default directory structure is correct.
     __________________
     PROFILES DIRECTORY
     ******************
@@ -41,8 +64,8 @@ def specifyDataDir():
     by the aggregation interval (eg H = hourly, 30T = 30min). See example below:
     |-- profiles  
         |-- raw
-            |-- group_year (eg 2013)
-                |-- year-month (eg 2013-5)
+            |-- unit (eg A)
+                |-- group_year (eg 2013)
                     |-- year-month_unit.feather (eg 2013-5_A.feather)
         |-- H
             |-- unit (eg A)
@@ -50,10 +73,6 @@ def specifyDataDir():
         |-- 30T
             |-- unit (eg A)
                 |-- year_unit.feather (eg 2013_A.feather)
-
-    Note that the file hierarchy in the 'raw' directory is different to the 
-    hierarchy in the aggregate directories. If you export 'raw' from the server 
-    or with dlrretrieval, the directory structure is correct.
     ________________
     TABLES DIRECTORY
     ****************
@@ -66,70 +85,44 @@ def specifyDataDir():
         |-- feather
             |-- ... (eg links.feather)            
     """
-    
-    profiles_dir = os.path.join(home_dir,'dlr_data','observations','profiles')
-    table_dir = os.path.join(home_dir,'dlr_data','observations','tables')
-    
-    dirs = {'profiles':profiles_dir, 'tables':table_dir}
 
-    for k, v in dirs.items():
-        #check if dlr_data/.../profiles/ and dlr_data/.../tables/ exists in default locations
-        if os.path.isdir(v):
-            mydir = v
-            print('Your stored {} path is {} .\n'.format(k, mydir))
-        else:
-            try:
-                filepaths = {}
-                #read directory paths from store_path.txt file
-                with open(os.path.join(usr_dir,'store_path.txt')) as f:
-                    for line in f:
-                        try:
-                            i, j = line.split(',')
-                            filepaths[i] = j.strip()
-                        except:
-                            pass
-
-                mydir = filepaths[k]
-                validdir = os.path.isdir(mydir)
-                #check if directory paths exist (does not validate directory structure)
-                if validdir is False:
-                    print('Your stored {} data path is invalid.'.format(k))
-                    raise 
-                else:
-                    print('Your stored {} data path is {}.'.format(k, mydir))
+    temp_obs_dir = os.path.join(home_dir,'dlr_data', 'observations') #default directory for observational data
+    
+    try:
+        mydir = getDataDir()
+    
+    except:
+        print('Data path not set or invalid directory.')       
+        while True:
+            mydir = input('The default path for storing data is \n{}\n Hit enter to keep the default or paste a new path to change it.\n'.format(temp_obs_dir))
+            validdir = os.path.isdir(mydir)
             
-            except:
-                #request
-                while True:
-                    mydir = input('Paste the path to your {} data.\n'.format(k))
-                    validdir = os.path.isdir(mydir)
+            if validdir is False:
+                print('\nThe directory does not exit. Creating it now ...')
+                if len(mydir) == 0:
+                    mydir = temp_obs_dir
+                os.makedirs(mydir, exist_ok=True)
                     
-                    if validdir is False:
-                        print('This is not a directory. Try again.')
-                        continue
-                    if validdir is True:
-                        break
-        dirs[k] = mydir
+            print('The data path has been set to \n{}\n'.format(mydir))
+            break
         
-    #write rawprofiles dir to file   
-    f = open(os.path.join(usr_dir,'store_path.txt'),'w')
-    for i in dirs.items():
-        f.write(', '.join(i)+'\n')
-    f.close()
+        #write data dir to file   
+        f = open(os.path.join(usr_dir,'store_path.txt'),'w')
+        f.write(mydir)
+        f.close()
+        
+    print('You can change it in USER_HOME/dlr_data/usr/store_path.txt')
     
-    print('\nYou can change your data paths in /your_home_directory/dlr_data/usr/store_path.txt')
+    profiles_dir = os.path.join(mydir, 'profiles')
+    table_dir = os.path.join(mydir, 'tables')
+    rawprofiles_dir = os.path.join(profiles_dir, 'raw')
     
-    return dirs['profiles'], dirs['tables']
+    return mydir, profiles_dir, table_dir, rawprofiles_dir
 
-#Data structure
-usr_data = specifyDataDir()
-profiles_dir = usr_data[0]
-table_dir = usr_data[1]
-rawprofiles_dir = os.path.join(profiles_dir, 'raw')
-obs_dir = os.path.dirname(profiles_dir)
-data_dir = os.path.dirname(obs_dir)
-fdata_dir = os.path.join(os.path.dirname(usr_dir), 'survey_features')
-pdata_dir = os.path.join(os.path.dirname(usr_dir), 'resampled_profiles')
+#Create data structure
+obs_dir, profiles_dir, table_dir, rawprofiles_dir = specifyDataDir()
+fdata_dir = os.path.join(os.path.dirname(obs_dir), 'survey_features')
+pdata_dir = os.path.join(os.path.dirname(obs_dir), 'resampled_profiles')
 
 class InputError(ValueError):
     """

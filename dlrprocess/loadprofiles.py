@@ -17,14 +17,11 @@ import os
 import gc
 
 from .surveys import loadID, loadTable
-from .support import rawprofiles_dir,  pdata_dir, InputError, validYears
+from .support import rawprofiles_dir, pdata_dir, InputError, validYears, writeLog
 
-def loadRawProfiles(year, unit):
+def loadRawProfiles(year, month, unit):
     """
-    This function uses a rolling window to reduce all raw load profiles to hourly 
-    mean values. Monthly load profiles are then concatenated into annual profiles 
-    and returned as a dictionary object.
-    The data is structured as dict[unit:{year:[list_of_profile_ts]}]
+    This function loads raw load profiles for a year, month and unit.
     
     """
     validYears(year) #check if year input is valid
@@ -33,22 +30,18 @@ def loadRawProfiles(year, unit):
         pass
     else:
         raise InputError(unit, "Invalid unit")     
-        
-    p = os.path.join(rawprofiles_dir, str(year))
+    
+    filename = str(year)+'-'+str(month)+'_G*'    
+    filepath = glob(os.path.join(rawprofiles_dir, unit, str(year), filename))
     
     ts = pd.DataFrame()
-    for child in next(os.walk(p))[1]:  
+    for p in filepath:
         try:
-            childpath = glob(os.path.join(p, child, '*_' + unit + '.*'))[-1] #if csv and feather files present, select the last file which should be feather file
-            try:
-                data = feather.read_dataframe(childpath)
-            except:
-                data = pd.read_csv(childpath)         
-            ts = ts.append(data)
-            del data
-            print(child, unit)
+            data = feather.read_dataframe(p)
         except:
-            print('Could not add data for ' + str(child) + ' ' + unit) #skip if file does not exist
+            data = pd.read_csv(p, parse_dates=['Datefield'], low_memory=False)         
+        ts = ts.append(data)
+        del data
 
     if len(ts)>0:
         ts.reset_index(inplace=True, drop=True)
@@ -57,35 +50,69 @@ def loadRawProfiles(year, unit):
         ts['Valid'].fillna(0, inplace=True)
         ts['ProfileID'] = ts['ProfileID'].astype(int)
         
-        return ts
+    print('{} {}: data loaded'.format(unit, year))
     
+    return ts    
     
 def reduceRawProfiles(year, unit, interval):
     """
-    This function uses a rolling window to reduce all raw load profiles to hourly mean values. Monthly load profiles are then concatenated into annual profiles and returned as a dictionary object.
-    The data is structured as dict[unit:{year:[list_of_profile_ts]}]
+    This function resamples all raw load profiles for a specific observation 
+    unit in a particular year to their mean values over an interval.  
     
+    *input*
+    -------
+    year (int)  
+    unit (str): one of 'A', 'V', 'Hz', 'kVA', 'kW' 
+    interval (str): 'H' for hourly, '30T' for 30min
+
     """
-    gc.collect() #clear any memory garbage
-    ts = loadRawProfiles(year, unit)
+    gc.collect() #clear any memory garbage    
+    validYears(year) #check if year input is valid
     
+    if unit in ['A','V','Hz','kVA','kW']: #check if unit input is valid
+        pass
+    else:
+        raise InputError(unit, "Invalid unit")     
+        
+    p = os.path.join(rawprofiles_dir, unit, str(year))
+    
+    ts = pd.DataFrame()
+    for child in os.listdir(p):
+
+        childpath = os.path.join(p, child)
+        try:
+            data = feather.read_dataframe(childpath)
+        except:
+            data = pd.read_csv(childpath, parse_dates=['Datefield'], low_memory=False)
+        
+        if len(data)>0:
+            print('Data loaded for {}'.format(child))    
+            #format data
+            data.reset_index(inplace=True, drop=True)
+            data.Datefield = np.round(data.Datefield.astype(np.int64), -9).astype('datetime64[ns]')
+            data['Valid'] = data['Valid'].map(lambda x: x.strip()).map({'Y':1, 'N':0})
+            data['Valid'].fillna(0, inplace=True)
+            data['ProfileID'] = data['ProfileID'].astype(int)
+            #resample data
+            data.sort_values(by=['RecorderID', 'ProfileID','Datefield'], inplace=True)
+            data.reset_index(inplace=True)
+            aggdata = data.groupby(['RecorderID', 'ProfileID']).resample(interval, on='Datefield').mean()
+            del data
+            aggdata.dropna(inplace=True)    #resampling creates lots of nan values
+            ts = ts.append(aggdata)
+            del aggdata        
+        else:
+            print('FAILED to load data for ' + child) #skip if file does not exist
+
     if ts is None:
         return print('No profiles for {} {}'.format(year, unit))
-    else:
-        
-        #ts_sorted = ts.set_index(['RecorderID','ProfileID','Datefield']).sort_index()
-        #ts = ts.sort_values(by=['RecorderID', 'ProfileID','Datefield']).reset_index(drop=True)
-        
-        ts.sort_values(by=['RecorderID', 'ProfileID','Datefield'], inplace=True)
-        ts.reset_index(inplace=True)
-        aggts = ts.groupby(['RecorderID', 'ProfileID']).resample(interval, on='Datefield').mean()
-        aggts.dropna(inplace=True)    #resampling creates lots of nan values
-        del ts #free memory
-        
-        aggts = aggts.loc[:, ['Unitsread', 'Valid']]
+    else:      
+        aggts = ts.loc[:, ['Unitsread', 'Valid']]
         aggts.reset_index(inplace=True)
         aggts.drop_duplicates(inplace=True)
         aggts.loc[(aggts.Valid!=1)&(aggts.Valid>0), 'Valid'] = 0
+        
+        del ts #free memory
            
         return aggts
 
@@ -99,28 +126,31 @@ def saveReducedProfiles(year, interval, filetype='feather'):
     for unit in ['A', 'V', 'kVA', 'Hz', 'kW']:
         gc.collect() #clear any memory garbage
         
+        print(year, unit)
         dir_path = os.path.join(pdata_dir, interval, unit)
         os.makedirs(dir_path, exist_ok=True)
         
-        ts = reduceRawProfiles(year, unit, interval)
-        wpath = os.path.join(dir_path, str(year) + '_' + unit + '.'+filetype)
-
-        #write to reduced data to file            
         try:
-            if filetype=='feather':
-                feather.write_dataframe(ts, wpath)
-            elif filetype=='csv':
-                ts.to_csv(wpath)
-            print('Write success')
-        except Exception as e:
-            print(e)
-            pass
-            #TODO: print error to log
-
-				#logline = [yearstart, yearend, interval]
+            ts = reduceRawProfiles(year, unit, interval)
+            wpath = os.path.join(dir_path, str(year) + '_' + unit + '.'+filetype)
+    
+            #write to reduced data to file            
+            try:
+                if filetype=='feather':
+                    feather.write_dataframe(ts, wpath)
+                elif filetype=='csv':
+                    ts.to_csv(wpath)
+                print('Write success')
+            except Exception as e:
+                print(e)
+                pass
+                	#logline = [yearstart, yearend, interval]
 				#log_lines = pd.DataFrame([logline], columns = ['from_year','to_year', 'resample_interval'])
 				#writeLog(log_lines,'log_reduce_profiles')
-        del ts #clear memory
+            del ts #clear memory
+                    
+        except:
+            pass
 
     return
 
@@ -470,7 +500,7 @@ def generateSeasonADTD(year):
     
     return 
 
-def dailyProfiles(year, unit):
+def dailyHourlyProfiles(year, unit):
     """
     Creates a clean dataframe of daily hourly loadprofiles for 'year' and 'unit'.
     """
@@ -543,7 +573,7 @@ def genX(year_range, drop_0=False, **kwargs):
         
         for y in range(year_range[0], year_range[1]+1):
                                         
-            data = resampleProfiles(dailyProfiles(y, unit), interval, aggfunc)
+            data = resampleProfiles(dailyHourlyProfiles(y, unit), interval, aggfunc)
             Xbatch = data.dropna() #remove missing values
             Xbatch.reset_index(inplace=True)
             X = X.append(Xbatch)

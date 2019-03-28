@@ -16,9 +16,8 @@ from glob import glob
 import json
 import feather
 
-from .support import usr_dir, fdata_dir, table_dir, InputError, validYears, geoMeta#, wrtiteLog
+from .support import usr_dir, fdata_dir, table_dir, InputError, validYears, geoMeta, writeLog
    
-
 def loadTable(name, query=None, columns=None):
     """
     This function loads all feather tables in filepath into workspace.
