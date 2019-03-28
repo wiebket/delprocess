@@ -78,7 +78,6 @@ def reduceRawProfiles(year, unit, interval):
     
     ts = pd.DataFrame()
     for child in os.listdir(p):
-
         childpath = os.path.join(p, child)
         try:
             data = feather.read_dataframe(childpath)
