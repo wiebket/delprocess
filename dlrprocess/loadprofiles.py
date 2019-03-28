@@ -110,7 +110,6 @@ def reduceRawProfiles(year, unit, interval):
         aggts.reset_index(inplace=True)
         aggts.drop_duplicates(inplace=True)
         aggts.loc[(aggts.Valid!=1)&(aggts.Valid>0), 'Valid'] = 0
-        
         del ts #free memory
            
         return aggts
