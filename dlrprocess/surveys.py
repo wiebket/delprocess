@@ -18,11 +18,13 @@ import feather
 
 from .support import usr_dir, fdata_dir, table_dir, InputError, validYears, geoMeta, writeLog
    
-def loadTable(name, query=None, columns=None):
+def loadTable(name, columns=None):
     """
     This function loads all feather tables in filepath into workspace.
     
     """
+    #TODO should also be able to read csv files
+    
     dir_path = os.path.join(table_dir, 'feather')
 
     file = os.path.join(dir_path, name +'.feather')
@@ -40,7 +42,13 @@ def loadTable(name, query=None, columns=None):
 
 def loadID():
     """
-    This function subsets Answer or Profile IDs by year. Tables variable can be constructred with loadTables() function. Year input can be number or string. id_name is AnswerID or ProfileID. 
+    This function matches all ProfileIDs of observational electricity data with AnswerIDs of the corresponding survey 
+    responses. Namibian households are removed. The following geographic information is added for each location:
+        - Latitude
+        - Longitude
+        - Province
+        - Municipality
+        - District
     """
     this_dir = os.path.dirname(__file__)
     groups = loadTable('groups')
@@ -57,7 +65,7 @@ def loadID():
     join = x.merge(groups, on='GroupID', how='left')
 
     #Wrangling data into right format    
-    all_ids = join[join['Survey'] != 'Namibia'] # remove Namibia 
+    all_ids = join[join['Survey'] != 'Namibia'] # remove Namibian households 
     all_ids = all_ids.dropna(subset=['GroupID','Year'])
     all_ids.Year = all_ids.Year.astype(int)
     all_ids.GroupID = all_ids.GroupID.astype(int)
@@ -78,40 +86,26 @@ def loadID():
     return all_ids
 
 
-def idsDuplicates():
+def duplicateIDs():
+    """
+    This function returns duplicate ProfileIDs and the corresponding AnswerIDs in which they are duplicated.
+    """
     ids = loadID()
-    i = ids[(ids.duplicated('AnswerID')==True)&(ids['AnswerID']!=0)]
+    i = ids[(ids.duplicated('ProfileID')==True)&(ids['ProfileID']!=0)]
     ip = i.pivot_table(index='Year',columns='AnswerID',values='ProfileID',aggfunc='count')
-    return ip.T.describe()
 
-def matchAIDToPID(year, pp):
-#TODO    still needs checking --- think about integrating with socios.loadID -> all PIDs and the 0 where there is no corresponding AID
+    print('Duplicate ProfileIDs:', i.ProfileID.unique())
+    print(ip)
+    return 
 
-    a_id = loadID(year, id_name = 'AnswerID')['id']
-#    p_id = socios.loadID(year, id_name = 'ProfileID')['id']
-
-    #get dataframe of linkages between AnswerIDs and ProfileIDs
-    links = loadTable('links')
-#    year_links = links[links.ProfileID.isin(p_id)]
-    year_links = links[links.AnswerID.isin(a_id)]
-    year_links = year_links.loc[year_links.ProfileID != 0, ['AnswerID','ProfileID']]        
-    
-    #get profile metadata (recorder ID, recording channel, recorder type, units of measurement)
-    profiles = loadTable('profiles')
-    #add AnswerID information to profiles metadata
-    profile_meta = year_links.merge(profiles, left_on='ProfileID', right_on='ProfileId').drop('ProfileId', axis=1)        
-    VI_profile_meta = profile_meta.loc[(profile_meta['Unit of measurement'] == 2), :] #select current profiles only
-
-#THIS IS NB!!
-    output = pp.merge(VI_profile_meta.loc[:,['AnswerID','ProfileID']], left_on='ProfileID_i', right_on='ProfileID').drop(['ProfileID','Valid_i','Valid_v'], axis=1)
-    output = output[output.columns.sort_values()]
-    output.fillna({'valid_calculated':0}, inplace=True)
-    
-    return output
 
 def loadQuestions(dtype = None):
     """
-    This function gets all questions.
+    This function gets all survey questions.
+    
+    *input*
+    -------
+    dtype (str): default = None, or one of 'blob', 'char', 'num'
     
     """
     qu = loadTable('questions').drop(labels='lock', axis=1)
@@ -126,7 +120,7 @@ def loadQuestions(dtype = None):
 
 def loadAnswers():
     """
-    This function returns all answer IDs and their question responses for a selected data type. If dtype is None, answer IDs and their corresponding questionaire IDs are returned instead.
+    This function returns all survey responses as a dict constructed by data type with keys = [blob, char, num].
     
     """
     answer_meta = loadTable('answers', columns=['AnswerID', 'QuestionaireID'])
@@ -192,13 +186,11 @@ def searchAnswers(search):
 
 def extractSocios(searchlist, year=None, col_names=None, geo=None):
     """
-
-    This function creates a dataframe containing the data for a set of selected features for a given year.
-    questionaire options: 6 - pre 1999, 3 - 2000 onwards
-
-    This function extracts a set of selected features for a given year.
-    'geo' adds location data and can be one of Municipality, District, Province or None
+    This function extracts a set of survey responses for a given year, based on a pre-defined list of search terms.
     
+    *input*
+    -------
+    dtype (str): default
     """
 
     if isinstance(searchlist, list):
