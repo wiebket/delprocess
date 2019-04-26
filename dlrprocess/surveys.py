@@ -83,7 +83,7 @@ def loadID():
                                      'District']], left_on='LocName', right_on='GPSName', how='left')
     output.drop(labels='GPSName', axis=1, inplace=True)
         
-    return all_ids
+    return output
 
 
 def duplicateIDs():
