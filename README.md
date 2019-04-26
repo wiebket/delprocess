@@ -1,4 +1,10 @@
-# South African Domestic Load Research Data Processing
+# South African Domestic Electrical Load Data Processing
+
+## About this package
+
+This package contains tools to process primary data from the South African Domestic Electric Load database. It requires local access to data from the database. Data can be obtained from [Data First's](https://www.datafirst.uct.ac.za/dataportal/) online repository or with [delretrieve](https://github.com/wiebket/delretrieve).
+
+## Package structure
 
 ```bash
 dlrprocess
@@ -8,25 +14,25 @@ dlrprocess
                 |-- 2016\_Boundaries\_Local
 		    |-- ...
 		|-- specs
-		    	|-- app\_broken\_00.txt
-		    	|-- appliance_00.txt
-		    	|-- appliance_94.txt	
-		    	|-- base_00.txt
-		    	|-- base_94.txt	
-		    	|-- behaviour_00.txt
-		    	|-- store_path.txt
-	    |-- command_line.py
-	    |-- loadprofiles.py
-	    |-- plotprofiles.py
-	    |-- support.py
-	    |-- surveys.py
+		    |-- app\_broken\_00.txt
+		    |-- appliance_00.txt
+		    |-- appliance_94.txt	
+		    |-- base_00.txt
+		    |-- base_94.txt	
+		    |-- behaviour_00.txt
+		    |-- store_path.txt
+	|-- command_line.py
+	|-- loadprofiles.py
+	|-- plotprofiles.py
+	|-- support.py
+	|-- surveys.py
     |-- setup.py
     |-- README.md
     |-- MANIFEST.in
 ```
-Directory hierarchy for *dlr_data* if created with package `dlrretrieve`:
+Directory hierarchy for *dlr_data* if created with package `delretrieve`:
 ```bash
-your\_home\_dir/dlr_data
+your\_home\_dir\dlr_data
 	|-- observations
 	    |-- profiles
 		    |-- raw
@@ -42,15 +48,11 @@ your\_home\_dir/dlr_data
 	    |-- store_path.txt (generated during setup)
 ```
 
-## About this package
-
-This package contains tools to process primary data from the South African Domestic Load Research database. It requires local access to data from the database. Data can be obtained from [Data First's](https://www.datafirst.uct.ac.za/dataportal/) online repository or with [dlrretrieve](https://github.com/wiebket/dlrprocess).
-
 ## Setup instructions
 Ensure that python 3 is installed on your computer. A simple way of getting it is to install it with [Anaconda](https://conda.io/docs/user-guide/install/index.html). 
 
 1. Clone this repository from github.
-2. Navigate to the root directory (`dlrprocess`) and run the `python setup.py install` script (run from Anaconda Prompt or other bash wiht access to python if running on Windows).
+2. Navigate to the root directory (`delprocess`) and run the `python setup.py install` script (run from Anaconda Prompt or other bash wiht access to python if running on Windows).
 3. You will be asked to confirm the data directories that contain your data. Paste the full path name when prompted. You can change this setting at a later stage by modifying the file `your_home_dir/dlr_data/usr/store_path.txt` .
 
 ## Data processing
