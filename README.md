@@ -70,30 +70,32 @@ This package runs a processing pipeline from the command line or can be accessed
 		    
 Modules: `surveys`, `loadprofiles`, `plotprofiles`
 
-### Timeseries data (DEL Metering data)
+### Timeseries data (**DEL M**etering data)
 	
 #### From the command line
 1. Execute `delprocess_profiles -i [interval]` from the command line (equivalent to `saveReducedProfiles()`)
 2. _Options_: -s [data start year] and -e [data end year] as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive
 3. _Additional command line options_: `-c or [--csv]`: Format and save output as csv files (default feather)
 
+##### Data output
+All files are saved in `your_home_dir/del_data/resampled_profiles/[interval]`.
+
+##### Feather file format
+Feather is the devalt format for temporary data storage of the large metering dataset as it is a fast and efficient file format for storing and retrieving data frames. It is compatible with both R and python. Feather files should be stored for working purposes only as the file format is not suitable for archiving. All feather files have been built under `feather.__version__ = 0.4.0`. If your feather package is of a later version, you may have trouble reading the files and will need to reconstruct them from the raw MSSQL database. Learn more about [feather](https://github.com/wesm/feather).
+
 #### In python
 Run `delprocess.saveReducedProfiles()`
 
 Additional profile processing methods:
 
-`loadRawProfiles(year, month, unit)`  
-`reduceRawProfiles(year, unit, interval)`  
-`loadReducedProfiles(year, unit, interval)`  
-`genX()`
+```
+loadRawProfiles(year, month, unit) 
+reduceRawProfiles(year, unit, interval)
+loadReducedProfiles(year, unit, interval)
+genX()
+```
 
-#### Data output
-All files are saved in `your_home_dir/del_data/resampled_profiles/[interval]`.
-
-#### Feather file format
-Feather is the devalt format for temporary data storage of the large metering dataset as it is a fast and efficient file format for storing and retrieving data frames. It is compatible with both R and python. Feather files should be stored for working purposes only as the file format is not suitable for archiving. All feather files have been built under `feather.__version__ = 0.4.0`. If your feather package is of a later version, you may have trouble reading the files and will need to reconstruct them from the raw MSSQL database. Learn more about [feather](https://github.com/wesm/feather).
-
-### Survey data (DEL Survey data)
+### Survey data (**DEL S**urvey data)
 
 #### From the command line
 If you know what survey data you want for your analysis, it is easiest to extract it from the command line.
@@ -105,6 +107,9 @@ If you know what survey data you want for your analysis, it is easiest to extrac
 `-q`: equivalent to `searchQuestions(args)`
 `-a`: equivalent to `searchAnswers(args)`
 
+##### Data output
+All files are saved in .csv format in `your_home_dir/del_data/survey_features/`.
+
 #### In python
 Import the package to use the following functions:
 
@@ -114,15 +119,10 @@ searchAnswers()
 genS()
 ```
 
-#### Data output
-All files are saved in .csv format in `your_home_dir/del_data/survey_features/`.
-
 #### Specs files format
-Spec file templates are copied to `your_home_dir/del_data/usr/specs` during setup.
+Spec file templates are copied to `your_home_dir/del_data/usr/specs` during setup. These can be used directly to retrieve standard responses for appliance, behavioural and demographic related questions, or be adapted to create custom datasets from the household survey data.
 
-TODO: describe naming convention
-
-The spec file is a dictionary of lists and dictionaries. It is loaded as a json file and _all inputs must be strings_, with `key:value` pairs separated by commas. The specfile must contain the following keys:
+The spec file is a dictionary of lists and dictionaries. It is loaded as a json file and **all inputs must be strings**, with `key:value` pairs separated by commas. The specfile must contain the following keys:
 
 |key | value |
 |---|--- |
@@ -132,8 +132,18 @@ The spec file is a dictionary of lists and dictionaries. It is loaded as a json 
 |transform | _dict_ of simple data transformations such as addition. Keys must be one of the variables in the features list, while the transformation variables must come from searchlist, eg. `{"fridge_freezer" : "x['fridgefreezerNumber'] - x['fridgefreezerBroken']"}` |
 |bins | _dict of lists_ specifying bin intervals for numerical data. Keys must be one of the variables in the features list, eg. `{"floor_area" : ["0", "50", "80"]}` |  
 |labels | _dict of lists_ specifying bin labels for numerical data. Keys must be one of the variables in the features list, eg. `{"floor_area" : ["0-50", "50-80"]}}` |
-|cut | _dict of dicts_ specifying details of bin segments for numerical data. Keys must be one of the variables in the features list. `right` indicates whether bins includes the rightmost edge or not. `include_lowest ` indicates whether the first interval should be left-inclusive or not eg. , `{"monthly_income":{"right":"False", "include_lowest":"True"}}` |
+|cut | _dict of dicts_ specifying details of bin segments for numerical data. Keys must be one of the variables in the features list. `right` indicates whether bins includes the rightmost edge or not. `include_lowest ` indicates whether the first interval should be left-inclusive or not, eg `{"monthly_income":{"right":"False", "include_lowest":"True"}}` |
 |replace | _dict of dicts_ specifying the coding for replacing feature values. Keys must be one of the variables in the features list, eg. `{"water_access": {"1":"nearby river/dam/borehole"}}` |
 |geo | _string_ specifying geographic location detail (can be `"Municipality"`,`"District"` or `"Province"`)  |
 
 If no transform, bins, labels, cuts, replace or geo is required, the value should be replaced with an empty dict `{}`.
+
+##### Creating a custom spec file
+To create a custome spec file, the following process is recommended:
+
+1. Copy an existing spec file template and delete all values (but keep the keys and formatting!)
+2. Use the `searchQuestions()` function to find all the questions that relate to a variable that you are interested in. Use this to construct your `searchlist`.
+3. Use the `searchAnswers()` function to get the responses to your search.
+4. Interrogate the responses to decide if any transform, bins and replacements are needed.
+5. If bins are needed, decided whether labels and cut are required.
+6. Decided whether high level geographic information should be added to the responses and update `geo` accordingly.

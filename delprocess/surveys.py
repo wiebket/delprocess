@@ -152,7 +152,11 @@ def searchQuestions(search = None):
     trantab = str.maketrans({'(':'', ')':'', ' ':'', '/':''})
     
     result = questions.loc[questions.Question.str.translate(trantab).str.contains(searchterm, case=False), ['Question', 'Datatype','QuestionaireID', 'ColumnNo']]
-    return result
+    
+    if len(result) is 0:
+        print('No question with this search term. Try something else.')
+    else:
+        return result
 
 def searchAnswers(search):
     """
