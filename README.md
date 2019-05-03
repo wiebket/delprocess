@@ -1,6 +1,6 @@
 <img src="/delprocess/data/DEL_logo.png" alt="DEL Logo" width="314" height="136.4" align="left" vspace="80" hspace="20" />
 
-# South African Domestic Electrical Load Data Processing
+# South African <br/> Domestic Electrical Load <br/> Data Processing
 
 &nbsp;
 
