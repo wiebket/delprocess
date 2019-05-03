@@ -36,9 +36,9 @@ delprocess
         |-- plotprofiles.py
         |-- support.py
         |-- surveys.py
-	|-- MANIFEST.in
-	|-- README.md
-	|-- setup.py
+    |-- MANIFEST.in
+    |-- README.md
+    |-- setup.py
 ```
 
 ## Setup instructions
