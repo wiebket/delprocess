@@ -136,8 +136,8 @@ def loadAnswers():
 
 def searchQuestions(search = None):
     """
-    Searches questions for a search term. A single search term can be specified as a string, 
-    or a list of search terms as list.
+    This function searches questions for a search term. A search term must be specified as a single string of 
+    words that can be separated by whitespace.
     
     """       
     questions = loadTable('questions').drop(labels='lock', axis=1)

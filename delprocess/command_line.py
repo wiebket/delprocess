@@ -16,7 +16,7 @@ from .support import validYears
 
 def list_callback(option, opt, value, parser):
   setattr(parser.values, option.dest, value.split(','))
-
+  
 def process_profiles():
     """
     """
@@ -53,9 +53,8 @@ def process_surveys():
     parser = optparse.OptionParser()
     parser.add_option('-s', '--startyear', dest='startyear', type=int, help='Data start year')
     parser.add_option('-e', '--endyear', dest='endyear', type=int, help='Data end year')
-    parser.add_option('--feather', action='store_true', dest='csv', help='Format and save output as feather files')
-    parser.add_option('-f', '--specfiles', dest='specfiles', help='Feature specification file name(s)')
-    parser.set_defaults(feather=False)
+    parser.add_option('-f', '--files', dest='specfiles', type=str, action='callback', callback=list_callback, 
+                      help='Feature specification file name(s)')
     
     (options, args) = parser.parse_args()
 		
@@ -63,14 +62,10 @@ def process_surveys():
         options.startyear = int(input('Enter survey start year: '))
     if options.endyear is None:
         options.endyear = int(input('Enter survey end year: '))
-    if options.feather == False:
-        filetype = 'csv'
-    else:
-        filetype = 'feather'
 
     validYears(options.startyear, options.endyear)   #check that year input is valid 
     
-    S = genS(options.specfiles, options.startyear, options.endyear, filetype)    
+    S = genS(options.specfiles, options.startyear, options.endyear)    
     del S
     
     return print('>>>Survey data extraction end.<<<')

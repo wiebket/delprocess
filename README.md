@@ -86,7 +86,7 @@ Additional profile processing methods:
 loadRawProfiles(year, month, unit) 
 reduceRawProfiles(year, unit, interval)
 loadReducedProfiles(year, unit, interval)
-genX()
+genX(year_range, drop_0=False, **kwargs)
 ```
 #### Data output
 All files are saved in `your_home_dir/del_data/resampled_profiles/[interval]`.
@@ -110,10 +110,12 @@ If you know what survey data you want for your analysis, it is easiest to extrac
 Import the package to use the following functions:
 
 ```
-searchQuestions()
-searchAnswers()
-genS()
+searchQuestions(searchterm)
+searchAnswers(searchterm)
+genS(spec_files, year_start, year_end)
 ```
+
+The search is not case sensitive and has been implemented as a simple `str.contains(searchterm, case=False)`, searching all the strings of all the `Question` column entries in the `questions.csv` data file. The searchterm must be specified as a single string, but can consist of different words separated by whitespace. The search function removes the whitespace between words and joins them, so the order of words is important. For example, 'hot water' will yield results, but 'water hot' will not!
 
 #### Data output
 All files are saved in .csv format in `your_home_dir/del_data/survey_features/`.
@@ -145,4 +147,8 @@ To create a custome spec file, the following process is recommended:
 3. Use the `searchAnswers()` function to get the responses to your search.
 4. Interrogate the responses to decide if any transform, bins and replacements are needed.
 5. If bins are needed, decided whether labels and cut are required.
-6. Decided whether high level geographic information should be added to the responses and update `geo` accordingly.
+6. Decide whether high level geographic information should be added to the responses and update `geo` accordingly.
+7. Save the file as `name_94.txt` or `name_00.txt`.
+
+**NB: Surveys were changed in 2000 and questions vary between the years from 1994 - 1999 and 2000 - 2014. Survey data is thus extracted in two batches and requires two spec files with appropriate search terms matched to the questionaire.** For example, the best search term to retrieve household income for the years 1994 - 1999 is 'income', while for 2000 - 2014 it is 'earn per month'.
+
