@@ -14,21 +14,16 @@ import pandas as pd
 import os
 from glob import glob
 import json
-import feather
 
 from .support import usr_dir, fdata_dir, table_dir, InputError, validYears, geoMeta, writeLog
    
 def loadTable(name, columns=None):
     """
-    This function loads all feather tables in filepath into workspace.
+    This function loads a table into the workspace.
     
     """
-    #TODO should also be able to read csv files
-    
-    dir_path = os.path.join(table_dir, 'feather')
-
-    file = os.path.join(dir_path, name +'.feather')
-    d = feather.read_dataframe(file)
+    file = os.path.join(table_dir, name +'.csv')
+    d = pd.read_csv(file)
     if columns is None:
         table = d
     else:
@@ -141,8 +136,8 @@ def loadAnswers():
 
 def searchQuestions(search = None):
     """
-    Searches questions for a search term, taking questionaire ID and question data type (num, blob, char) as input. 
-    A single search term can be specified as a string, or a list of search terms as list.
+    Searches questions for a search term. A single search term can be specified as a string, 
+    or a list of search terms as list.
     
     """       
     questions = loadTable('questions').drop(labels='lock', axis=1)
@@ -295,7 +290,7 @@ def generateSociosSetSingle(year, spec_file, set_id='ProfileID'):
         cpi_percentage=(0.265,0.288,0.309,0.336,0.359,0.377,0.398,0.42,0.459,0.485,0.492,0.509,
                     0.532,0.57,0.636,0.678,0.707,0.742, 0.784, 0.829,0.88,0.92,0.979,1.03)
         cpi = dict(zip(list(range(1994,2015)),cpi_percentage))
-        data['monthly_income'] = data['monthly_income']/cpi[year]
+        data['monthly_income'] = np.round(data['monthly_income']/cpi[year], 2)
     
     #Cut columns into datatypes that match factors of BN node variables    
     for k, v in bins.items():
@@ -346,7 +341,7 @@ def generateSociosSetMulti(spec_files, year_start=1994, year_end=2014):
     
     return ff
 
-def genS(spec_files, year_start, year_end, filetype='csv'):
+def genS(spec_files, year_start, year_end):
     """
     This function saves an evidence dataset with observations in the data directory.
     
@@ -361,33 +356,19 @@ def genS(spec_files, year_start, year_end, filetype='csv'):
         
     #Save data to disk
     root_name = '_'.join(spec_files)
-    file_name =  root_name+'_'+str(year_start)+'+'+str(year_end-year_start)+'.'+filetype
+    file_name =  root_name+'_'+str(year_start)+'+'+str(year_end-year_start)+'.csv'
     dir_path = os.path.join(fdata_dir, root_name)
     os.makedirs(dir_path , exist_ok=True)
     file_path = os.path.join(dir_path, file_name)
     
     try:
-        try:
-            evidence = feather.read_dataframe(file_path)
-            evidence.set_index('ProfileID',inplace=True)
-        except:
-            evidence = pd.read_csv(file_path).set_index('ProfileID')
+        evidence = pd.read_csv(file_path).set_index('ProfileID')
     
     except:
         #Generate evidence data
         evidence = generateSociosSetMulti(spec_files, year_start, year_end)
-        status = 1      
-        message = 'Success!'
-        if filetype == 'feather':
-            feather.write_dataframe(evidence.reset_index(), file_path)
-            print('Success! Saved to data/feature_data/'+root_name+'/'+file_name)
-        elif filetype == 'csv':
-            evidence.to_csv(file_path, index=False)
-            print('Success! Saved to data/feature_data/'+root_name+'/'+file_name)
-        else:
-            status = 0
-            message = 'Cannot save to specified file type'
-            print(message)
+        evidence.to_csv(file_path, index=False)
+        print('Success! Saved to data/feature_data/'+root_name+'/'+file_name)
     
     		#TODO errors are a MESS! 
             #save errors to logs

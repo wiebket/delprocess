@@ -1,2 +1,2 @@
-include dlrprocess/data/geometa/*
-include dlrprocess/data/geometa/2016_Boundaries_Local/*
+include delprocess/data/geometa/*
+include delprocess/data/geometa/2016_Boundaries_Local/*

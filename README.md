@@ -36,7 +36,6 @@ delprocess
         |-- plotprofiles.py
         |-- support.py
         	|-- surveys.py
-	|-- __init__.py
 	|-- MANIFEST.in
 	|-- README.md
 	|-- setup.py
@@ -49,7 +48,7 @@ Ensure that python 3 is installed on your computer. A simple way of getting it i
 2. Navigate to the root directory (`delprocess`) and run `python setup.py install` (run from Anaconda Prompt or other bash with access to python if running on Windows).
 3. You will be asked to confirm the data directories that contain your data. Paste the full path name when prompted. You can change this setting at a later stage by modifying the file `your_home_dir/del_data/usr/store_path.txt` .
 
-This package only works if the data structure is *exactly* like the directory hierarchy in *del_data* if created with the package `delretrieve`:
+This package only works if the data structure is _exactly_ like the directory hierarchy in _del_data_ if created with the package `delretrieve`:
 
 ```bash
 your_home_dir/del_data
@@ -59,8 +58,7 @@ your_home_dir/del_data
 			    |-- unit
 				    |-- GroupYear
 	    |-- tables
-		    |-- csv
-		    |-- feather
+		    |-- ...
 	|-- survey_features
 	|-- usr
 	    |-- specs (automatically copied from delprocess/data/specs during setup)
@@ -92,7 +90,10 @@ genX()
 ```
 
 #### Data output
-All files are saved in .csv format in `your_home_dir/del_data/resampled_profiles/[interval]`.
+All files are saved in `your_home_dir/del_data/resampled_profiles/[interval]`.
+
+#### Feather file format
+Feather has been chosen as the format for temporary data storage as it is a fast and efficient file format for storing and retrieving data frames. It is compatible with both R and python. Feather files should be stored for working purposes only as the file format is not suitable for archiving. All feather files have been built under `feather.__version__ = 0.4.0`. If your feather package is of a later version, you may have trouble reading the files and will need to reconstruct them from the raw MSSQL database. Learn more about [feather](https://github.com/wesm/feather).
 
 ### Survey data
 
@@ -105,7 +106,6 @@ If you know what survey data you want for your analysis, it is easiest to extrac
 4. _Additional command line options_
 `-q`: equivalent to `searchQuestions(args)`
 `-a`: equivalent to `searchAnswers(args)`
-`--feather`: Format and save output as feather files (default csv)
 
 #### In python
 Import the package to use the following functions:
@@ -120,11 +120,20 @@ genS()
 All files are saved in .csv format in `your_home_dir/del_data/survey_features/`.
 
 #### Specs files format
-Templates copied to `your_home_dir/del_data/usr/specs` during setup.
+Spec file templates are copied to `your_home_dir/del_data/usr/specs` during setup.
+
 TODO: describe naming convention
-TODO: describe file content
 
+The spec file is a dictionary of lists and dictionaries. It is loaded as a json file and _all inputs must be strings_, with key:value pairs separated by commas. The specfile must contain the following keys:
 
+_year_range_ | list of two strings specifying start and end year, eg. ["2000","2014"]  
+_features_ | list of user-defined variable names, eg. ["fridge_freezer","geyser","heater"]  
+_searchlist_ | list of database question search terms, eg. ["fridgefreezerNumber" ,"geyserNumber", "heaterNumber"]  
+_transform_ | dict of simple data transformations such as addition. Keys must be one of the variables in the features list, eg. {"fridge_freezer" : "x['fridgefreezerNumber'] - x['fridgefreezerBroken']"}  
+_bins_ | dict . Keys must be listed as a variable in features, eg. {"floor_area" : ["0", "50", "80"]},  
+_labels_ | eg. {"floor_area" : ["0-50", "50-80"]},  
+_cut_ | {"monthly_income":{"right":"False", "include_lowest":"True"}},  
+_replace_ | dict of dicts specifying the coding for replacing feature values, eg. {"water_access": {"1":"nearby river/dam/borehole"}}  
+_geo_ | string specifying site geographic detail (can be "Municipality","District" or "Province")  
 
-### File format
-Feather has been chosen as the format for temporary data storage as it is a fast and efficient file format for storing and retrieving data frames. It is compatible with both R and python. Feather files should be stored for working purposes only as the file format is not suitable for archiving. All feather files have been built under `feather.__version__ = 0.4.0`. If your feather package is of a later version, you may have trouble reading the files and will need to reconstruct them from the raw MSSQL database. Learn more about [feather](https://github.com/wesm/feather).
+If there are no transforms, bins, labels, cuts, replace or geo, their value should be replaced with an empty dict `{}`.

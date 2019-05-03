@@ -178,7 +178,7 @@ def geoMeta():
     """
     # SHP, DBF and SHX files from http://energydata.uct.ac.za/dataset/2016-municipal-boundaries-south-africa
     this_dir = os.path.dirname(__file__)
-    munic2016 = os.path.join(this_dir, 'data', 'geometa', '2016-Boundaries-Local',
+    munic2016 = os.path.join(this_dir, 'data', 'geometa', '2016_Boundaries_Local',
                              'Local_Municipalities_2016') 
     site_ref = pd.read_csv(os.path.join(this_dir, 'data', 'geometa', 
                                         'DLR Site coordinates.csv'))

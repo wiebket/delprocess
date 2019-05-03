@@ -124,7 +124,6 @@ def saveReducedProfiles(year, interval, filetype='feather'):
     for unit in ['A', 'V', 'kVA', 'Hz', 'kW']:
         gc.collect() #clear any memory garbage
         
-        print(year, unit)
         dir_path = os.path.join(pdata_dir, interval, unit)
         os.makedirs(dir_path, exist_ok=True)
         
@@ -138,7 +137,7 @@ def saveReducedProfiles(year, interval, filetype='feather'):
                     feather.write_dataframe(ts, wpath)
                 elif filetype=='csv':
                     ts.to_csv(wpath, index=False)
-                print('Write success')
+                print('Write success for', year, unit)
             except Exception as e:
                 print(e)
                 pass
@@ -147,7 +146,8 @@ def saveReducedProfiles(year, interval, filetype='feather'):
 				#writeLog(log_lines,'log_reduce_profiles')
             del ts #clear memory
                     
-        except:
+        except FileNotFoundError as e:
+            print(e)
             pass
 
     return
@@ -158,8 +158,6 @@ def loadReducedProfiles(year, unit, interval):
     This function loads a year's unit profiles from the dir_name in profiles 
     directory into a dataframe and returns it together with the year and unit concerned.
     """
-
-    validYears(year) #check if year input is valid
     
     file_path = None
     while file_path is None:
@@ -530,7 +528,6 @@ def resampleProfiles(dailyprofiles, interval, aggfunc = 'mean'):
 def genX(year_range, drop_0=False, **kwargs):
     """
     Generate a dataframe of hourly daily profiles. The dataframe is indexed by 
-    
     
     Variables:
         year_range -- [list]
