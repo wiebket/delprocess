@@ -2,8 +2,6 @@
 
 # South African <br/> Domestic Electrical Load <br/> Data Processing
 
-&nbsp;
-
 ## About this package
 
 This package contains tools to process primary data from the South African Domestic Electric Load (DEL) database. It requires access to csv or feather file hierarchy extracted from the original General_LR4 database produced during the NRS Load Research study. 
