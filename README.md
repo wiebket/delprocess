@@ -7,8 +7,8 @@ This package contains tools to process primary data from the South African Domes
 ## Package structure
 
 ```bash
-dlrprocess
-    |-- dlrprocess
+delprocess
+    |-- delprocess
         |-- data
     	    |-- geometa
                 |-- 2016\_Boundaries\_Local
@@ -30,9 +30,9 @@ dlrprocess
     |-- README.md
     |-- MANIFEST.in
 ```
-Directory hierarchy for *dlr_data* if created with package `delretrieve`:
+Directory hierarchy for *del_data* if created with package `delretrieve`:
 ```bash
-your\_home\_dir\dlr_data
+your\_home\_dir\del_data
 	|-- observations
 	    |-- profiles
 		    |-- raw
@@ -44,7 +44,7 @@ your\_home\_dir\dlr_data
 	|-- survey_features
 	|-- survey_features
 	|-- usr
-	    |-- specs (copied from dlrprocess/data/specs)
+	    |-- specs (copied from delprocess/data/specs)
 	    |-- store_path.txt (generated during setup)
 ```
 
@@ -53,22 +53,22 @@ Ensure that python 3 is installed on your computer. A simple way of getting it i
 
 1. Clone this repository from github.
 2. Navigate to the root directory (`delprocess`) and run the `python setup.py install` script (run from Anaconda Prompt or other bash wiht access to python if running on Windows).
-3. You will be asked to confirm the data directories that contain your data. Paste the full path name when prompted. You can change this setting at a later stage by modifying the file `your_home_dir/dlr_data/usr/store_path.txt` .
+3. You will be asked to confirm the data directories that contain your data. Paste the full path name when prompted. You can change this setting at a later stage by modifying the file `your_home_dir/del_data/usr/store_path.txt` .
 
 ## Data processing
-This package can be accessed from the command line to run a processing pipeline, or via python directy with `import dlrprocess`.
+This package can be accessed from the command line to run a processing pipeline, or via python directy with `import delprocess`.
 
 ### Timeseries data
 
 #### Run from command line
-1. Execute `dlrprocess_profiles -i [interval]`. This is equivalent to running `saveReducedProfiles()`.
+1. Execute `delprocess_profiles -i [interval]`. This is equivalent to running `saveReducedProfiles()`.
 2. -s [data start year] and -e [data end year] as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive.
 
 _Additional command line options_
 `-c or [--csv]`: Format and save output as csv files (default feather)
 
 #### Data output
-All files are saved in .csv format in `your_home_dir/dlr_data/resampled_profiles/[interval]`.
+All files are saved in .csv format in `your_home_dir/del_data/resampled_profiles/[interval]`.
 
 #### Additional profile processing methods
 #Those pre-loaded in __init__
@@ -79,7 +79,7 @@ All files are saved in .csv format in `your_home_dir/dlr_data/resampled_profiles
 #### Run from command line
 If you know what survey data you want for your analysis, it is easier to extract it from the command line.
 1. Create a pair of spec files `*_94.txt` and `d*_00.txt` with your specifications
-2. Execute `dlrprocess_surveys -f [filename]`. This is equivalent to running `genS()`.
+2. Execute `delprocess_surveys -f [filename]`. This is equivalent to running `genS()`.
 3. -s [data start year] and -e [data end year] as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive.
 
 _Additional command line options_
@@ -88,12 +88,12 @@ _Additional command line options_
 `--feather`: Format and save output as feather files (default csv)
 
 #### Specs files format
-Templates copied to `your_home_dir/dlr_data/usr/specs` during setup.
+Templates copied to `your_home_dir/del_data/usr/specs` during setup.
 TODO: describe naming convention
 TODO: describe file content
 
 #### Data output
-All files are saved in .csv format in `your_home_dir/dlr_data/survey_features/`.
+All files are saved in .csv format in `your_home_dir/del_data/survey_features/`.
 
 #### Additional profile processing methods
 
