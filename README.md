@@ -2,7 +2,15 @@
 
 ## About this package
 
-This package contains tools to process primary data from the South African Domestic Electric Load database. It requires local access to data from the database. Data can be obtained from [Data First's](https://www.datafirst.uct.ac.za/dataportal/) online repository or with [delretrieve](https://github.com/wiebket/delretrieve).
+This package contains tools to process primary data from the South African Domestic Electric Load (DEL) database. It requires access to csv or feather file hierarchy extracted from the original General_LR4 database produced during the NRS Load Research study. 
+
+**Note on data access:** 
+Data can be accessed and set up as follows:  
+1. From [Data First](www.datafirst.uct.ac.za) at the University of Cape Town (UCT). On site access to the complete 5 minute data is available through their secure server room.   
+2. For those with access to the original database, [delretrieve](https://github.com/wiebket/delretrieve) can be used to retrieve the data and create the file hierarchy for further processing.
+3. Several datasets with aggregated views are available [online]() and can be accessed for academic purposes. If you use them, you will *not* need to install this package. 
+
+Other useful packages are:
 
 ## Package structure
 
@@ -10,100 +18,112 @@ This package contains tools to process primary data from the South African Domes
 delprocess
     |-- delprocess
         |-- data
-    	    |-- geometa
-                |-- 2016\_Boundaries\_Local
-		    |-- ...
-		|-- specs
-		    |-- app\_broken\_00.txt
-		    |-- appliance_00.txt
-		    |-- appliance_94.txt	
-		    |-- base_00.txt
-		    |-- base_94.txt	
-		    |-- behaviour_00.txt
-		    |-- store_path.txt
-	|-- command_line.py
-	|-- loadprofiles.py
-	|-- plotprofiles.py
-	|-- support.py
-	|-- surveys.py
-    |-- setup.py
-    |-- README.md
-    |-- MANIFEST.in
+        	    |-- geometa
+                |-- 2016_Boundaries_Local
+                |-- ...
+            |-- specs
+                |-- app_broken_00.txt
+                |-- appliance_00.txt
+                |-- appliance_94.txt	
+                |-- behaviour_00.txt
+                |-- binned_base_00.txt
+                |-- binned_base_94.txt
+                |-- dist_base_00.txt
+                |-- dist_base_94.txt	
+        |-- __init.py__
+        |-- command_line.py
+        |-- loadprofiles.py
+        |-- plotprofiles.py
+        |-- support.py
+        	|-- surveys.py
+	|-- __init__.py
+	|-- MANIFEST.in
+	|-- README.md
+	|-- setup.py
 ```
-Directory hierarchy for *del_data* if created with package `delretrieve`:
+
+## Setup instructions
+Ensure that python 3 is installed on your computer. A simple way of getting it is to install it with [Anaconda](https://conda.io/docs/user-guide/install/index.html). Once python has been installed, the delprocess package can be installed.
+	
+1. Clone this repository from github.
+2. Navigate to the root directory (`delprocess`) and run `python setup.py install` (run from Anaconda Prompt or other bash with access to python if running on Windows).
+3. You will be asked to confirm the data directories that contain your data. Paste the full path name when prompted. You can change this setting at a later stage by modifying the file `your_home_dir/del_data/usr/store_path.txt` .
+
+This package only works if the data structure is *exactly* like the directory hierarchy in *del_data* if created with the package `delretrieve`:
+
 ```bash
-your\_home\_dir\del_data
+your_home_dir/del_data
 	|-- observations
 	    |-- profiles
 		    |-- raw
-			    |-- GroupYear
-				    |-- ObsYear-ObsMonth
+			    |-- unit
+				    |-- GroupYear
 	    |-- tables
 		    |-- csv
 		    |-- feather
 	|-- survey_features
-	|-- survey_features
 	|-- usr
-	    |-- specs (copied from delprocess/data/specs)
+	    |-- specs (automatically copied from delprocess/data/specs during setup)
 	    |-- store_path.txt (generated during setup)
 ```
 
-## Setup instructions
-Ensure that python 3 is installed on your computer. A simple way of getting it is to install it with [Anaconda](https://conda.io/docs/user-guide/install/index.html). 
-
-1. Clone this repository from github.
-2. Navigate to the root directory (`delprocess`) and run the `python setup.py install` script (run from Anaconda Prompt or other bash wiht access to python if running on Windows).
-3. You will be asked to confirm the data directories that contain your data. Paste the full path name when prompted. You can change this setting at a later stage by modifying the file `your_home_dir/del_data/usr/store_path.txt` .
-
 ## Data processing
-This package can be accessed from the command line to run a processing pipeline, or via python directy with `import delprocess`.
+This package runs a processing pipeline from the command line or can be accessed via python directy with `import delprocess`.
+		    
+Modules: surveys, loadprofiles, plotprofiles
 
 ### Timeseries data
+	
+#### From the command line
+1. Execute `delprocess_profiles -i [interval]` from the command line (equivalent to `delprocess.saveReducedProfiles()`)
+2. _Options_: -s [data start year] and -e [data end year] as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive
+3. _Additional command line options_: `-c or [--csv]`: Format and save output as csv files (default feather)
 
-#### Run from command line
-1. Execute `delprocess_profiles -i [interval]`. This is equivalent to running `saveReducedProfiles()`.
-2. -s [data start year] and -e [data end year] as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive.
+#### In python
+Run `delprocess.saveReducedProfiles()`
 
-_Additional command line options_
-`-c or [--csv]`: Format and save output as csv files (default feather)
+Additional profile processing methods:
+
+```
+loadRawProfiles(year, month, unit)
+reduceRawProfiles(year, unit, interval)
+loadReducedProfiles(year, unit, interval)
+genX()
+```
 
 #### Data output
 All files are saved in .csv format in `your_home_dir/del_data/resampled_profiles/[interval]`.
 
-#### Additional profile processing methods
-#Those pre-loaded in __init__
-
-
 ### Survey data
 
-#### Run from command line
-If you know what survey data you want for your analysis, it is easier to extract it from the command line.
-1. Create a pair of spec files `*_94.txt` and `d*_00.txt` with your specifications
-2. Execute `delprocess_surveys -f [filename]`. This is equivalent to running `genS()`.
-3. -s [data start year] and -e [data end year] as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive.
+#### From the command line
+If you know what survey data you want for your analysis, it is easiest to extract it from the command line.
 
-_Additional command line options_
+1. Create a pair of spec files `*_94.txt` and `*_00.txt` with your specifications
+2. Execute `delprocess_surveys -f [filename]` (equivalent to running `genS()`)
+3. _Options_: -s [data start year] and -e [data end year] as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive.
+4. _Additional command line options_
 `-q`: equivalent to `searchQuestions(args)`
 `-a`: equivalent to `searchAnswers(args)`
 `--feather`: Format and save output as feather files (default csv)
+
+#### In python
+Import the package to use the following functions:
+
+```
+searchQuestions()
+searchAnswers()
+genS()
+```
+
+#### Data output
+All files are saved in .csv format in `your_home_dir/del_data/survey_features/`.
 
 #### Specs files format
 Templates copied to `your_home_dir/del_data/usr/specs` during setup.
 TODO: describe naming convention
 TODO: describe file content
 
-#### Data output
-All files are saved in .csv format in `your_home_dir/del_data/survey_features/`.
-
-#### Additional profile processing methods
-
-`searchQuestions()`
-
-`searchAnswers()`
-
-`extractSocios()`
-
-`genS()`
 
 
 ### File format
