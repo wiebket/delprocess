@@ -122,18 +122,18 @@ Spec file templates are copied to `your_home_dir/del_data/usr/specs` during setu
 
 TODO: describe naming convention
 
-The spec file is a dictionary of lists and dictionaries. It is loaded as a json file and _all inputs must be strings_, with key:value pairs separated by commas. The specfile must contain the following keys:
+The spec file is a dictionary of lists and dictionaries. It is loaded as a json file and _all inputs must be strings_, with `key:value` pairs separated by commas. The specfile must contain the following keys:
 
 |key | value |
 |---|--- |
-|_year_range_ | list of two strings specifying start and end year, eg. ["2000","2014"] |
-|_features_ | list of user-defined variable names, eg. ["fridge_freezer","geyser","heater"]  |
-|_searchlist_ | list of database question search terms, eg. ["fridgefreezerNumber" ,"geyserNumber", "heaterNumber"]  |
-|_transform_ | dict of simple data transformations such as addition. Keys must be one of the variables in the features list, eg. {"fridge_freezer" : "x['fridgefreezerNumber'] - x['fridgefreezerBroken']"}  |
-|_bins_ | dict . Keys must be listed as a variable in features, eg. {"floor_area" : ["0", "50", "80"]} |  
-|_labels_ | eg. {"floor_area" : ["0-50", "50-80"]}}  |
-|_cut_ | {"monthly_income":{"right":"False", "include_lowest":"True"}} |
-|_replace_ | dict of dicts specifying the coding for replacing feature values, eg. {"water_access": {"1":"nearby river/dam/borehole"}}  |
-|_geo_ | string specifying site geographic detail (can be "Municipality","District" or "Province")  |
+|year_range | _list_ of two strings specifying start and end year, eg. `["2000","2014"]` |
+|features | _list_ of user-defined variable names, eg. `["fridge_freezer","geyser","heater"]` |
+|searchlist | _list_ of database question search terms, eg. `["fridgefreezerNumber" ,"geyserNumber", "heaterNumber"]` |
+|transform | _dict_ of simple data transformations such as addition. Keys must be one of the variables in the features list, eg. `{"fridge_freezer" : "x['fridgefreezerNumber'] - x['fridgefreezerBroken']"}` |
+|bins | _dict_ . Keys must be listed as a variable in features, eg. `{"floor_area" : ["0", "50", "80"]}` |  
+|labels | _dict_ eg. `{"floor_area" : ["0-50", "50-80"]}}` |
+|cut | _dict_ `{"monthly_income":{"right":"False", "include_lowest":"True"}}` |
+|replace | _dict of dicts_ specifying the coding for replacing feature values, eg. `{"water_access": {"1":"nearby river/dam/borehole"}}` |
+|geo | _string_ specifying site geographic detail (can be `"Municipality"`,`"District"` or `"Province"`)  |
 
-If there are no transforms, bins, labels, cuts, replace or geo, their value should be replaced with an empty dict `{}`.
+If there is no transform, bins, labels, cuts, replace or geo, their value should be replaced with an empty dict `{}`.
