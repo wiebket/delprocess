@@ -3,7 +3,7 @@
 """
 Created on Monday 3 December 2018
 
-This package contains commandline calls for the dlrprocessing module.
+This package contains commandline calls for the delprocess modules.
 
 @author: Wiebke Toussaint
 """

@@ -3,7 +3,7 @@
 """
 @author: Wiebke Toussaint
 
-This package contains support functions for the dlrprocessing module.
+This package contains support functions for the delprocess modules.
 
 """
 
@@ -17,12 +17,12 @@ from shapely.geometry import Point
 from shapely.geometry import shape
 
 home_dir = Path.home()
-usr_dir = os.path.join(home_dir, 'dlr_data','usr')
+usr_dir = os.path.join(home_dir, 'del_data','usr')
 
 def getDataDir():
     """
     This function checks if a valid data directory has been specified in
-    USER_HOME/dlr_data/usr/store_path.txt.
+    USER_HOME/del_data/usr/store_path.txt.
     """
     
     filepath = []
@@ -49,11 +49,11 @@ def specifyDataDir():
     This function searches for the profiles and tables data directories.
 
     The data in the default location must be store as follows:
-    |-- your_data_dir (eg dlr_data)
+    |-- your_data_dir (eg del_data)
         |-- observations
             |-- .... (ie profiles, tables)
             
-    If 'raw' data has been exported from the server or retrieved with dlrretrieval, 
+    If 'raw' data has been exported from the server or retrieved with delretrieve, 
     the default directory structure is correct.
     __________________
     PROFILES DIRECTORY
@@ -86,7 +86,7 @@ def specifyDataDir():
             |-- ... (eg links.feather)            
     """
 
-    temp_obs_dir = os.path.join(home_dir,'dlr_data', 'observations') #default directory for observational data
+    temp_obs_dir = os.path.join(home_dir,'del_data', 'observations') #default directory for observational data
     
     try:
         mydir = getDataDir()
@@ -111,7 +111,7 @@ def specifyDataDir():
         f.write(mydir)
         f.close()
         
-    print('You can change it in USER_HOME/dlr_data/usr/store_path.txt')
+    print('You can change it in USER_HOME/del_data/usr/store_path.txt')
     
     profiles_dir = os.path.join(mydir, 'profiles')
     table_dir = os.path.join(mydir, 'tables')
