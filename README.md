@@ -127,13 +127,13 @@ The spec file is a dictionary of lists and dictionaries. It is loaded as a json 
 |key | value |
 |---|--- |
 |year_range | _list_ of two strings specifying start and end year, eg. `["2000","2014"]` |
-|features | _list_ of user-defined variable names, eg. `["fridge_freezer","geyser","heater"]` |
-|searchlist | _list_ of database question search terms, eg. `["fridgefreezerNumber" ,"geyserNumber", "heaterNumber"]` |
-|transform | _dict_ of simple data transformations such as addition. Keys must be one of the variables in the features list, eg. `{"fridge_freezer" : "x['fridgefreezerNumber'] - x['fridgefreezerBroken']"}` |
-|bins | _dict_ . Keys must be listed as a variable in features, eg. `{"floor_area" : ["0", "50", "80"]}` |  
-|labels | _dict_ eg. `{"floor_area" : ["0-50", "50-80"]}}` |
-|cut | _dict_ `{"monthly_income":{"right":"False", "include_lowest":"True"}}` |
-|replace | _dict of dicts_ specifying the coding for replacing feature values, eg. `{"water_access": {"1":"nearby river/dam/borehole"}}` |
-|geo | _string_ specifying site geographic detail (can be `"Municipality"`,`"District"` or `"Province"`)  |
+|features | _list_ of user-defined variable names, eg. `["fridge_freezer","geyser"]` |
+|searchlist | _list_ of database question search terms, eg. `["fridgefreezerNumber" ,"geyserNumber"]` |
+|transform | _dict_ of simple data transformations such as addition. Keys must be one of the variables in the features list, while the transformation variables must come from searchlist, eg. `{"fridge_freezer" : "x['fridgefreezerNumber'] - x['fridgefreezerBroken']"}` |
+|bins | _dict of lists_ specifying bin intervals for numerical data. Keys must be one of the variables in the features list, eg. `{"floor_area" : ["0", "50", "80"]}` |  
+|labels | _dict of lists_ specifying bin labels for numerical data. Keys must be one of the variables in the features list, eg. `{"floor_area" : ["0-50", "50-80"]}}` |
+|cut | _dict of dicts_ specifying details of bin segments for numerical data. Keys must be one of the variables in the features list. `right` indicates whether bins includes the rightmost edge or not. `include_lowest ` indicates whether the first interval should be left-inclusive or not eg. , `{"monthly_income":{"right":"False", "include_lowest":"True"}}` |
+|replace | _dict of dicts_ specifying the coding for replacing feature values. Keys must be one of the variables in the features list, eg. `{"water_access": {"1":"nearby river/dam/borehole"}}` |
+|geo | _string_ specifying geographic location detail (can be `"Municipality"`,`"District"` or `"Province"`)  |
 
-If there is no transform, bins, labels, cuts, replace or geo, their value should be replaced with an empty dict `{}`.
+If no transform, bins, labels, cuts, replace or geo is required, the value should be replaced with an empty dict `{}`.
