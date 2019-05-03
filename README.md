@@ -1,5 +1,6 @@
 # South African Domestic Electrical Load Data Processing
-![DEL Logo](/delprocess/data/DEL_logo.png)
+
+<img src="/delprocess/data/DEL_logo.png" alt="DEL Logo" width="150" height="100" />
 
 ## About this package
 
