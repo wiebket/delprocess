@@ -60,11 +60,11 @@ def loadID():
     
     p_id = links[(links.GroupID != 0) & (links['ProfileID'] != 0)
                 ].drop(labels=['ConsumerID','lock','AnswerID'], axis=1)
-    profile_meta = profiles.merge(p_id, how='left', left_on='ProfileId', right_on='ProfileID',
-                                  sort=True).drop(labels=['ProfileId','lock'], axis=1)
+    profile_meta = profiles.merge(p_id, how='left', left_on='ProfileId', right_on='ProfileID'
+                                  ).drop(labels=['ProfileId','lock'], axis=1)
     ap = links[links.GroupID==0].drop(labels=['ConsumerID','lock','GroupID'], axis=1)
-    x = profile_meta.merge(ap, how='outer', on = 'ProfileID', sort=True)    
-    join = x.merge(groups, on='GroupID', how='left', sort=True)
+    x = profile_meta.merge(ap, how='outer', on = 'ProfileID')    
+    join = x.merge(groups, on='GroupID', how='left')
 
     # Wrangling data into right format   
     # Remove Namibian households 
@@ -85,7 +85,7 @@ def loadID():
 
     output = all_ids.merge(
             geo_meta[['GPSName','Lat','Long','Province','Municipality','District']], 
-            left_on='LocName', right_on='GPSName', how='left', sort=True)
+            left_on='LocName', right_on='GPSName', how='left')
     output.drop(labels='GPSName', axis=1, inplace=True)
         
     return output
@@ -123,15 +123,15 @@ def loadAnswers():
     answer_meta = loadTable('answers').loc[:,['AnswerID', 'QuestionaireID']]
 
     blob = loadTable('answers_blob_anonymised').drop(labels='lock', axis=1)
-    blob = blob.merge(answer_meta, how='left', on='AnswerID', sort=True)
+    blob = blob.merge(answer_meta, how='left', on='AnswerID')
     blob.fillna(np.nan, inplace = True)
     
     char = loadTable('answers_char_anonymised').drop(labels='lock', axis=1)
-    char = char.merge(answer_meta, how='left', on='AnswerID', sort=True)
+    char = char.merge(answer_meta, how='left', on='AnswerID')
     char.fillna(np.nan, inplace = True)
 
     num = loadTable('answers_number_anonymised').drop(labels='lock', axis=1)
-    num = num.merge(answer_meta, how='left', on='AnswerID', sort=True)
+    num = num.merge(answer_meta, how='left', on='AnswerID')
     num.fillna(np.nan, inplace = True)
 
     return {'blob':blob, 'char':char, 'num':num}
@@ -206,7 +206,7 @@ def searchAnswers(search):
             newcolumns = ['AnswerID'] + ['QuestionaireID'] + list(select.Question.astype(str).str.lower())
             df = ans.loc[ans['QuestionaireID']==i,fetchcolumns]           
             df.columns = newcolumns
-            result = result.merge(df, how='outer', sort=True)
+            result = result.merge(df, how='outer')
             
     return result
 
@@ -258,17 +258,17 @@ def extractSocios(searchlist, year=None, col_names=None, geo=None):
         if len(ans.columns[2:])==1:
             ans.columns = ['AnswerID','QuestionaireID'] + [search.get(s)]
         try:    
-            result = result.merge(ans, how='outer', sort=True)
+            result = result.merge(ans, how='outer')
         except Exception:
             raise InputError(searchlist, 'Not contained in any question. Try something else.')
     
     try:    
         if geo is None:
             result = result.merge(sub_ids[['AnswerID','ProfileID','Unit of measurement',
-                                           'Survey','Year','LocName']], how='left', sort=True)
+                                           'Survey','Year','LocName']], how='left')
         else:
             result = result.merge(sub_ids[['AnswerID', 'ProfileID','Unit of measurement',
-                                           'Survey','Year', geo,'LocName']], how='left', sort=True)
+                                           'Survey','Year', geo,'LocName']], how='left')
         return result
     except:
         raise InputError(year, 'No survey data collected for this year.')
@@ -330,7 +330,7 @@ def generateSociosSetSingle(year, spec_file):
     data = extractSocios(searchlist, year, col_names=searchlist, geo=geo)
     # Add missing columns dropped during feature extraction
     missing_cols = list(set(searchlist) - set(data.columns))
-    data = data.append(pd.DataFrame(columns=missing_cols), sort=True)
+    data = data.append(pd.DataFrame(columns=missing_cols))
     data['AnswerID'] = data.AnswerID.astype(int)
     data['ProfileID'] = data.ProfileID.astype(int)
 
@@ -410,10 +410,18 @@ def generateSociosSetMulti(spec_files, year_start=1994, year_end=2014):
                 ff[c] = ff[c].astype(int)
                 #TODO also check for nan
     # Problem with duplicated profile_id 8396, answer id 2000458 - remove one            
-    ff = ff[~ff.index.duplicated(keep='first')]
+    ff = ff[~ff.ProfileID.duplicated(keep='first')]
     cols = ff.columns.tolist()
     cols.insert(0, cols.pop(cols.index('ProfileID')))
+    cols.insert(1, cols.pop(cols.index('AnswerID')))
+    cols.insert(2, cols.pop(cols.index('Unit of measurement')))    
+    cols.insert(3, cols.pop(cols.index('Survey')))
+    cols.insert(4, cols.pop(cols.index('QuestionaireID')))
+    cols.insert(5, cols.pop(cols.index('Year')))
+    cols.insert(6, cols.pop(cols.index('LocName')))    
+
     ff = ff.reindex(columns = cols)
+    ff.sort_values(by=['Year','ProfileID'], inplace=True)
     
     return ff
 
@@ -471,7 +479,7 @@ def recorderLocations(year):
     if year > 2009:
         groups = loadTable('groups')
         recorderids = loadTable('recorderinstall')
-        reclocs = groups.merge(recorderids, left_on='GroupID', right_on='GROUP_ID', sort=True)
+        reclocs = groups.merge(recorderids, left_on='GroupID', right_on='GROUP_ID')
         reclocs['recorder_abrv'] = reclocs['RECORDER_ID'].apply(lambda x:x[:3])
         yearlocs = reclocs.loc[reclocs['Year']== year,['GroupID','LocName','recorder_abrv']].drop_duplicates()
         locations = yearlocs.sort_values('LocName').reset_index(drop=True)
