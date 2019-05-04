@@ -29,7 +29,7 @@ setup(
       include_package_data=True,
       packages=find_packages(),
       py_modules = ['delprocess.surveys', 'delprocess.loadprofiles', 
-                    'delprocess.plotprofiles'],
+                    'delprocess.plotprofiles', 'delprocess.aggprofiles'],
       data_files=[(os.path.join(usr_dir,'specs'), [os.path.join(
                   'delprocess','data','specs', f) for f in [files for root, dirs, files 
                     in os.walk(os.path.join('delprocess','data','specs'))][0]])],

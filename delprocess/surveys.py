@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Jul  4 09:34:08 2017
-
 @author: Wiebke Toussaint
 
-Answer query script: This script contains functions to query and manipulate DLR survey answer sets. It references datasets that must be stored in a /data/tables subdirectory in the parent directory.
+This module contains functions to query and manipulate DEL Survey data.
 
+Updated: 4 May 2019
 """
 
 import numpy as np
@@ -15,52 +15,60 @@ import os
 from glob import glob
 import json
 
-from .support import usr_dir, fdata_dir, table_dir, InputError, validYears, geoMeta, writeLog
+from .support import usr_dir, fdata_dir, table_dir, InputError, validYears, geoMeta#, writeLog
    
-def loadTable(name, columns=None):
-    """
-    This function loads a table into the workspace.
+
+def loadTable(name):
+    """Loads a table into the workspace.
     
+    Parameters:
+        name (str): Table name. Must be saved as csv file in USER_data_path/tables.
+    
+    Returns:
+        pandas dataframe: Data in csv file (ie table).
     """
     file = os.path.join(table_dir, name +'.csv')
-    d = pd.read_csv(file)
-    if columns is None:
-        table = d
-    else:
-        table = d[columns]
-            
     try: 
+        table = pd.read_csv(file)        
         return table
+    except FileNotFoundError:
+        return('Could not find table "{}" in {}'.format(name, table_dir))
 
-    except UnboundLocalError:
-        return('Could not find table with name '+name)    
 
 def loadID():
-    """
-    This function matches all ProfileIDs of observational electricity data with AnswerIDs of the corresponding survey 
-    responses. Namibian households are removed. The following geographic information is added for each location:
+    """Matches all electricity ProfileIDs with household survey AnswerIDs. 
+    
+    The following geographic information is added:
         - Latitude
         - Longitude
         - Province
         - Municipality
         - District
+    Namibian households and non-domestic survey respondents are removed. 
+
+    Returns:
+        pandas dataframe with columns [
+                'RecorderID', 'ChannelNo', 'Type', 'Unit of measurement', 
+                'Active', 'aux', 'GroupID', 'ProfileID', 'AnswerID', 
+                'ContextID', 'Dom_NonDom', 'Survey', 'Year', 'Location', 
+                'LocName', 'Lat', 'Long', 'Province', 'Municipality', 'District']   
     """
     this_dir = os.path.dirname(__file__)
     groups = loadTable('groups')
     links = loadTable('links')
     profiles = loadTable('profiles')
     
-#    a_id = links[(links.GroupID != 0) & (links['AnswerID'] != 0)].drop(columns=['ConsumerID','lock','ProfileID'])
-    p_id = links[(links.GroupID != 0) & (links['ProfileID'] != 0)].drop(labels=['ConsumerID','lock','AnswerID'], axis=1)
-    profile_meta = profiles.merge(p_id, how='left', left_on='ProfileId', right_on='ProfileID').drop(labels=['ProfileId','lock'], axis=1)
-
+    p_id = links[(links.GroupID != 0) & (links['ProfileID'] != 0)
+                ].drop(labels=['ConsumerID','lock','AnswerID'], axis=1)
+    profile_meta = profiles.merge(p_id, how='left', left_on='ProfileId', right_on='ProfileID'
+                                  ).drop(labels=['ProfileId','lock'], axis=1)
     ap = links[links.GroupID==0].drop(labels=['ConsumerID','lock','GroupID'], axis=1)
-    
     x = profile_meta.merge(ap, how='outer', on = 'ProfileID')    
     join = x.merge(groups, on='GroupID', how='left')
 
-    #Wrangling data into right format    
-    all_ids = join[join['Survey'] != 'Namibia'] # remove Namibian households 
+    # Wrangling data into right format   
+    # Remove Namibian households 
+    all_ids = join[join['Survey'] != 'Namibia'] 
     all_ids = all_ids.dropna(subset=['GroupID','Year'])
     all_ids.Year = all_ids.Year.astype(int)
     all_ids.GroupID = all_ids.GroupID.astype(int)
@@ -71,54 +79,48 @@ def loadID():
     try:
         geo_meta = pd.read_csv(os.path.join(this_dir,'data', 'geometa', 'site_geo.csv'))
     except:
-        geoMeta()
+        # Merge boundary data to site locations if not yet done
+        geoMeta() 
         geo_meta = pd.read_csv(os.path.join(this_dir,'data', 'geometa', 'site_geo.csv'))
 
-    output = all_ids.merge(geo_meta[['GPSName','Lat','Long','Province','Municipality',
-                                     'District']], left_on='LocName', right_on='GPSName', how='left')
+    output = all_ids.merge(
+            geo_meta[['GPSName','Lat','Long','Province','Municipality','District']], 
+            left_on='LocName', right_on='GPSName', how='left')
     output.drop(labels='GPSName', axis=1, inplace=True)
         
     return output
 
 
-def duplicateIDs():
-    """
-    This function returns duplicate ProfileIDs and the corresponding AnswerIDs in which they are duplicated.
-    """
-    ids = loadID()
-    i = ids[(ids.duplicated('ProfileID')==True)&(ids['ProfileID']!=0)]
-    ip = i.pivot_table(index='Year',columns='AnswerID',values='ProfileID',aggfunc='count')
-
-    print('Duplicate ProfileIDs:', i.ProfileID.unique())
-    print(ip)
-    return 
-
-
 def loadQuestions(dtype = None):
-    """
-    This function gets all survey questions.
+    """Returns all survey questions.
     
-    *input*
-    -------
-    dtype (str): default = None, or one of 'blob', 'char', 'num'
+    Parameters:
+        dtype (str): One of 'blob', 'char', 'num'. Defaults to None.
     
+    Returns:
+        pandas dataframe with columns [
+                'QuestionID', 'QuestionaireID', 'Question', 'Datatype', 
+                'ColumnNo', 'ColumnAlias']    
     """
     qu = loadTable('questions').drop(labels='lock', axis=1)
     qu.Datatype = qu.Datatype.astype('category')
     qu.Datatype.cat.categories = ['blob','char','num']
     qu['ColumnAlias'] = [x.strip() for x in qu['ColumnAlias']]
+    
     if dtype is None:
         pass
     else: 
         qu = qu[qu.Datatype == dtype]
     return qu
 
+
 def loadAnswers():
+    """Returns all anonymised survey responses.
+        
+    Returns:
+        dict of pandas dataframes: keys = ['blob', 'char', 'num']
     """
-    This function returns all survey responses as a dict constructed by data type with keys = [blob, char, num].
-    
-    """
-    answer_meta = loadTable('answers', columns=['AnswerID', 'QuestionaireID'])
+    answer_meta = loadTable('answers').loc[:,['AnswerID', 'QuestionaireID']]
 
     blob = loadTable('answers_blob_anonymised').drop(labels='lock', axis=1)
     blob = blob.merge(answer_meta, how='left', on='AnswerID')
@@ -134,11 +136,27 @@ def loadAnswers():
 
     return {'blob':blob, 'char':char, 'num':num}
 
+
 def searchQuestions(search = None):
-    """
-    This function searches questions for a search term. A search term must be specified as a single string of 
-    words that can be separated by whitespace.
+    """Searches questions for a single search criteria. 
+       
+    The search criteria must be a single string that can consist of multiple words 
+    separated by whitespace. The order of words in the search criteria is important, 
+    as the whitespace will be removed and words joined during search. 
     
+    The search is not case sensitive and has been implemented as a simple 
+    `str.contains(searchterm, case=False)`, searching all the strings of all 
+    the `Question` column entries in the `questions.csv` data file. 
+    
+    For example, 'hot water' and 'HoT wAtER' will yield the same results, 
+    but 'water hot' will yield no results!
+    
+    Parameters:
+        search (str): String of words separated by whitespace. Defaults to None (returns all).
+    
+    Returns:
+        pandas dataframe with columns [
+            'Question', 'Datatype', 'QuestionaireID', 'ColumnNo']
     """       
     questions = loadTable('questions').drop(labels='lock', axis=1)
     questions.Datatype = questions.Datatype.astype('category')
@@ -150,48 +168,63 @@ def searchQuestions(search = None):
         searchterm = search.replace(' ', '+')
 
     trantab = str.maketrans({'(':'', ')':'', ' ':'', '/':''})
-    
-    result = questions.loc[questions.Question.str.translate(trantab).str.contains(searchterm, case=False), ['Question', 'Datatype','QuestionaireID', 'ColumnNo']]
+    result = questions.loc[
+            questions.Question.str.translate(trantab).str.contains(searchterm, case=False), 
+            ['Question', 'Datatype','QuestionaireID', 'ColumnNo']]
     
     if len(result) is 0:
-        print('No question with this search term. Try something else.')
+        print('Search term "{}" is not contained in any question. Try something else.'.format(search))
     else:
         return result
 
+
 def searchAnswers(search):
-    """
-    This function returns the answer IDs and responses for a list of search terms
+    """Returns the AnswerIDs and responses for a single search criteria.
     
+    Parameters:
+        search (str): String of words separated by whitespace. Defaults to None (returns all).
+    
+    Returns:
+        pandas dataframe with columns [
+            'AnswerID', 'QuestionaireID', Questions corresonding to search]    
     """
     answers = loadAnswers()
-
-    questions = searchQuestions(search) #get column numbers for query
-    
+    # Get column numbers for query
+    questions = searchQuestions(search) 
     result = pd.DataFrame(columns=['AnswerID','QuestionaireID'])
+    
     for dt in questions.Datatype.unique():
         ans = answers[dt]
         for i in questions.QuestionaireID.unique():            
-            select = questions.loc[(questions.Datatype == dt)&(questions.QuestionaireID==i)]            
+            select = questions.loc[(questions.Datatype == dt) &
+                                   (questions.QuestionaireID==i)]            
             fetchcolumns=['AnswerID'] + ['QuestionaireID'] + list(select.ColumnNo.astype(str))
             newcolumns = ['AnswerID'] + ['QuestionaireID'] + list(select.Question.astype(str).str.lower())
-            
             df = ans.loc[ans['QuestionaireID']==i,fetchcolumns]           
             df.columns = newcolumns
-            
             result = result.merge(df, how='outer')
             
     return result
 
 
 def extractSocios(searchlist, year=None, col_names=None, geo=None):
-    """
-    This function extracts a set of survey responses for a given year, based on a pre-defined list of search terms.
+    """Extracts survey responses based on a list of search criteria
     
-    *input*
-    -------
-    dtype (str): default
+    The result are joined with ProfileIDs and geographic metadata.
+    
+    Parameters:
+        searchlist (list): List of valid search criteria.
+        year (int): 1994 <= year <= 2014. Defaults to None (returns all).
+        col_names (list): Renames new column headers. Defaults to None (uses searchlist).
+        geo (str): Can be 'Province', 'District' or 'Municipality'. Defaults to None (returns none).
+    
+    len(searchlist) == len(col_names)
+    
+    Returns:
+        pandas dataframe with columns [
+            'AnswerID', 'QuestionaireID', Questions corresonding to searchlist, 
+            'ProfileId, geo]
     """
-
     if isinstance(searchlist, list):
         pass
     else:
@@ -202,7 +235,7 @@ def extractSocios(searchlist, year=None, col_names=None, geo=None):
     else:
         search = dict(zip(searchlist, col_names))
     
-    #filter AnswerIDs by year          
+    # Filter AnswerIDs by year          
     ids = loadID()
     if year is None:
         sub_ids = ids[ids.AnswerID!=0]
@@ -210,36 +243,52 @@ def extractSocios(searchlist, year=None, col_names=None, geo=None):
         sub_ids = ids[(ids.AnswerID!=0)&(ids.Year==year)]
         sub_ids = sub_ids.drop_duplicates(subset='AnswerID')
     
-    #generate feature frame
+    # Generate feature frame
     result = pd.DataFrame(columns=['AnswerID','QuestionaireID'])        
     for s in search.keys():
         d = searchAnswers(s)
-        ans = d[(d.AnswerID.isin(sub_ids.AnswerID)) & (d.QuestionaireID < 10)] # remove non-domestic results 
+        # Remove non-domestic results
+        ans = d[(d.AnswerID.isin(sub_ids.AnswerID)) & (d.QuestionaireID < 10)]  
         ans = ans.dropna(axis=1, how='all')
-    #set feature frame column names
+        # Set feature frame column names
         if len(ans.columns[2:])==1:
             ans.columns = ['AnswerID','QuestionaireID'] + [search.get(s)]
-
         try:    
             result = result.merge(ans, how='outer')
         except Exception:
             pass
-        
-    if geo is None:
-        result = result.merge(sub_ids[['AnswerID', 'ProfileID']], how='left')
-    else:
-        result = result.merge(sub_ids[['AnswerID', 'ProfileID', geo]], how='left')
-                          
-    return result
+    
+    try:    
+        if geo is None:
+            result = result.merge(sub_ids[['AnswerID', 'ProfileID']], how='left')
+        else:
+            result = result.merge(sub_ids[['AnswerID', 'ProfileID', geo]], how='left')
+        return result
+    except:
+        raise InputError(year, 'No survey data collected for this year.')
+
 
 def generateSociosSetSingle(year, spec_file, set_id='ProfileID'):
-    """
-    This function generates a json formatted evidence text file compatible with 
-    the syntax for providing evidence to the python library libpgm for the specified 
-    year. The function requires a json formatted text file with feature specifications as input.
+    """Filters and transforms survey responses for a single year.
+
+    The survey features are filtered and transformed based on requirements 
+    specified in a spec_files. The formatting of the spec_file must be 
+    exactly like the templates in `delprocess/data/specs/`. 
+    Consult the `README` file for more information.
+
+    NB: The function adjusts monthly income values for inflation, 
+    baselined to Stats SA December 2016.
     
+    Parameters:
+        year (int): 1994 <= year <= 2014
+        spec_file (str): Name of feature specification file.
+            spec_file naming convention: root_94.txt or root_00.txt - only change root
+        set_id (str): Selects column to set as index. Either 'ProfileID' or 'AnswerID'. 
+    
+    Returns:
+        pandas dataframe with columns labelled according to 'features' specified in spec_file  
     """
-    #Get feature specficiations
+    # Get feature specficiations
     files = glob(os.path.join(usr_dir, 'specs', spec_file + '*.txt'))
 
     for file_path in files:
@@ -250,8 +299,9 @@ def generateSociosSetSingle(year, spec_file, set_id='ProfileID'):
         except:
             raise InputError(year, 'Problem reading the spec file.')
             
-        if year >= int(year_range[0]) and year <= int(year_range[1]):            
-            validYears(year) #check if year input is valid
+        if year >= int(year_range[0]) and year <= int(year_range[1]):
+            # Check if year input is valid            
+            validYears(year) 
             break
         else:
             continue
@@ -268,35 +318,32 @@ def generateSociosSetSingle(year, spec_file, set_id='ProfileID'):
     else:
         geo = featurespec['geo']
     
-    #Get data and questions from socio-demographic survey responses
+    # Get data and questions from socio-demographic survey responses
     data = extractSocios(searchlist, year, col_names=searchlist, geo=geo)
+    # Add missing columns dropped during feature extraction
     missing_cols = list(set(searchlist) - set(data.columns))
-    data = data.append(pd.DataFrame(columns=missing_cols), sort=True) #add columns dropped during feature extraction
-    data.fillna(0, inplace=True) #fill na with 0 to allow for further processing
+    data = data.append(pd.DataFrame(columns=missing_cols), sort=True)
     data['AnswerID'] = data.AnswerID.astype(int)
     data['ProfileID'] = data.ProfileID.astype(int)
 
-    if len(data) is 0:
-        raise InputError(year, 'No survey data collected for this year')
-    
-    else:
-        #Transform and select BN nodes from dataframe 
-        for k, v in transform.items():
-            data[k] = data.apply(lambda x: eval(v), axis=1)
-        try:
-            data = data[[set_id, geo] + features]
-        except:
-            data = data[[set_id] + features]
+    for k, v in transform.items():
+        data[k] = data.apply(lambda x: eval(v), axis=1)
+    try:
+        data = data[[set_id, geo] + features]
+    except:
+        data = data[[set_id] + features]
             
-    #adjust monthly income for inflation: baselined to Stats SA December 2016 values. 
-    #Important that this happens here, after columns have been renamed and before income data is binned
+    # Adjust monthly income for inflation: baselined to 
+    # Stats SA December 2016 values. Important that this happens here, 
+    # after columns have been renamed and before income data is binned.
     if 'monthly_income' in features:
-        cpi_percentage=(0.265,0.288,0.309,0.336,0.359,0.377,0.398,0.42,0.459,0.485,0.492,0.509,
-                    0.532,0.57,0.636,0.678,0.707,0.742, 0.784, 0.829,0.88,0.92,0.979,1.03)
+        cpi_percentage=(0.265,0.288,0.309,0.336,0.359,0.377,0.398,0.42,
+                        0.459,0.485,0.492,0.509,0.532,0.57,0.636,0.678,
+                        0.707,0.742, 0.784, 0.829,0.88,0.92,0.979,1.03)
         cpi = dict(zip(list(range(1994,2015)),cpi_percentage))
         data['monthly_income'] = np.round(data['monthly_income']/cpi[year], 2)
     
-    #Cut columns into datatypes that match factors of BN node variables    
+    # Bin features    
     for k, v in bins.items():
         bin_vals = [int(b) for b in v]
         try:
@@ -309,13 +356,28 @@ def generateSociosSetSingle(year, spec_file, set_id='ProfileID'):
     for y, z in replace.items():
         data[y].replace([int(a) for a in z.keys()], z.values(),inplace=True)                                  
         data[y].where(data[y]!=0, inplace=True)  
-            
-    data.set_index(set_id, inplace=True) #set ID column as index
+
+    # Set ID column as index        
+    data.set_index(set_id, inplace=True) 
 
     return data
                  
-def generateSociosSetMulti(spec_files, year_start=1994, year_end=2014):
 
+def generateSociosSetMulti(spec_files, year_start=1994, year_end=2014):
+    """Filters and transforms survey responses for a year range.
+    
+    The function iterates through all the spec_files, appending the features for 
+    all years before merging the features for all spec_files.
+    
+    Parameters:
+        spec_files (list): List of names of feature specification files.
+            spec_file naming convention: root_94.txt or root_00.txt - only change root
+        year_start (int): 1994 <= year_start <= 2014. Defaults to 1994.
+        year_end (int): year_start <= year_end <= 2014. Defaults to 2014.
+    
+    Returns:
+        pandas dataframe with columns labelled according to 'features' specified in spec_files    
+    """
     if isinstance(spec_files, list):
         pass
     else:
@@ -327,117 +389,87 @@ def generateSociosSetMulti(spec_files, year_start=1994, year_end=2014):
         for year in range(year_start, year_end+1):
             try:
                 gg = gg.append(generateSociosSetSingle(year, spec))
-            except Exception:
+            except Exception as e:
                 ## TODO this should be logged
                 print('Could not extract features for '+str(year)+' with spec '+spec)
+                print(e)
             pass
         ff = ff.merge(gg, left_index=True, right_index=True, how='outer')
-        del gg #clear memory
+        # Clear memory
+        del gg 
 
-    #Some data wrangling to sort out data types
+    # Some data wrangling to sort out data types
     for c in ff.columns:
         if ff[c].dtype == np.float64:
-            if sum(ff[c]%1) == 0.0: #check for columns that should be integers
+            # Check for columns that should be integers
+            if sum(ff[c]%1) == 0.0: 
                 ff[c] = ff[c].astype(int)
                 #TODO also check for nan
-                
-    ff = ff[~ff.index.duplicated(keep='first')] #problem with profile_id 8396, answer id 2000458
+    # Problem with duplicated profile_id 8396, answer id 2000458 - remove one            
+    ff = ff[~ff.index.duplicated(keep='first')] #
     
     return ff
 
-def genS(spec_files, year_start, year_end):
-    """
-    This function saves an evidence dataset with observations in the data directory.
-    
-    """
-    loglines = []
 
+def genS(spec_files, year_start, year_end):
+    """Saves survey responses selected and transformed as noted in spec_files.
+
+    The function first checks if a feature file for the specified parameters
+    exists. If not, it creates it with generateSociosSetMulti().
+    
+    Parameters:
+        spec_files (list): List of names of feature specification files.
+            spec_file naming convention: root_94.txt or root_00.txt - only change root
+        year_start (int): 1994 <= year_start <= 2014. Defaults to 1994.
+        year_end (int): year_start <= year_end <= 2014. Defaults to 2014.
+    
+    Returns:
+        pandas dataframe with columns labelled according to 'features' specified in spec_files    
+    """
     if isinstance(spec_files, list):
         pass
-    
     else:
         spec_files = [spec_files]
         
-    #Save data to disk
+    # Save data to disk
     root_name = '_'.join(spec_files)
     file_name =  root_name+'_'+str(year_start)+'+'+str(year_end-year_start)+'.csv'
     dir_path = os.path.join(fdata_dir, root_name)
     os.makedirs(dir_path , exist_ok=True)
     file_path = os.path.join(dir_path, file_name)
-    
+     
     try:
-        evidence = pd.read_csv(file_path).set_index('ProfileID')
-    
+        features = pd.read_csv(file_path).set_index('ProfileID')
+        print('Success! File already exists.')
     except:
-        #Generate evidence data
-        evidence = generateSociosSetMulti(spec_files, year_start, year_end)
-        evidence.to_csv(file_path, index=False)
+        # Generate feature data
+        features = generateSociosSetMulti(spec_files, year_start, year_end)
+        features.to_csv(file_path)
         print('Success! Saved to data/feature_data/'+root_name+'/'+file_name)
-    
-    		#TODO errors are a MESS! 
-            #save errors to logs
-		    #l = ['featureExtraction', year_start, year_end, status, message, spec_files, file_name]
-		    #loglines.append(l)            
-		    #logs = pd.DataFrame(loglines, columns = ['process','from year','to year','status','message','features', 'output_file'])
-		    #writeLog(logs,'log_generateData')
- 
-    evidence.sort_index(inplace=True)
+
+    features.sort_index(inplace=True)
            
-    return evidence
+    return features
 
-def checkAnswer(answerid, features):
-    """
-    This function returns the survey responses for an individuals answer ID and list of search terms.
-    
-    """
-    links = loadTable('links')
-    groupid = links.loc[links['AnswerID']==answerid].reset_index(drop=True).get_value(0, 'GroupID')
-    groups = loadTable('groups')
-    year = int(groups.loc[groups.GroupID == groupid, 'Year'].reset_index(drop=True)[0])
-    
-    ans = extractSocios(features, year).loc[extractSocios(features, year)['AnswerID']==answerid]
-    return ans
 
-def recorderLocations(year = 2014):
-    """
-    This function returns all survey locations and recorder abbreviations for a given year. Only valid from 2009 onwards.
+def recorderLocations(year):
+    """Returns all survey locations and recorder abbreviations for a given year. 
     
+    Parameters:
+        year (int): 2009 <= year <= 2014
+    
+    Returns:
+        pandas dataframe: recorder locations for year
     """
     if year > 2009:
-        stryear = str(year)
         groups = loadTable('groups')
         recorderids = loadTable('recorderinstall')
-        
         reclocs = groups.merge(recorderids, left_on='GroupID', right_on='GROUP_ID')
         reclocs['recorder_abrv'] = reclocs['RECORDER_ID'].apply(lambda x:x[:3])
-        yearlocs = reclocs.loc[reclocs['Year']== stryear,['GroupID','LocName','recorder_abrv']].drop_duplicates()
+        yearlocs = reclocs.loc[reclocs['Year']== year,['GroupID','LocName','recorder_abrv']].drop_duplicates()
+        locations = yearlocs.sort_values('LocName').reset_index(drop=True)
         
-        locations = yearlocs.sort_values('LocName')
         return locations 
     
     else:
         print('Recorder locations can only be returned for years after 2009.')
-
-def lang(code = None):
-    """
-    This function returns the language categories.
-    
-    """
-    language = dict(zip(searchAnswers(qnairid=5)[0].iloc[:,1], searchAnswers(qnairid=5,dtype='char')[0].iloc[:,1]))
-    if code is None:
-        pass
-    else:
-        language = language[code]
-    return language
-
-def altE(code = None):
-    """
-    This function returns the alternative fuel categories.
-    
-    """
-    altenergy = dict(zip(searchAnswers(qnairid=8)[0].iloc[:,1], searchAnswers(qnairid=8,dtype='char')[0].iloc[:,1]))
-    if code is None:
-        pass
-    else:
-        altenergy = altenergy[code]
-    return altenergy

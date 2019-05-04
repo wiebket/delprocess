@@ -3,8 +3,9 @@
 """
 @author: Wiebke Toussaint
 
-This package contains support functions for the delprocess modules.
+Support functions for the delprocess package.
 
+Updated: 4 May 2019
 """
 
 import os
@@ -49,9 +50,10 @@ def specifyDataDir():
     This function searches for the profiles and tables data directories.
 
     The data in the default location must be store as follows:
-    |-- your_data_dir (eg del_data)
+    |-- your_data_dir (default: USER_HOME/del_data)
         |-- observations
-            |-- .... (ie profiles, tables)
+            |-- profiles
+            |-- tables
             
     If 'raw' data has been exported from the server or retrieved with delretrieve, 
     the default directory structure is correct.
@@ -59,9 +61,10 @@ def specifyDataDir():
     PROFILES DIRECTORY
     ******************
     The data in the profiles directory is from the Profiletable in the database.
-    These are recorded electricity readings in A, V, kWh, kVA or Hz. The 5min readings
+    These are metered electricity readings in A, V, kWh, kVA or Hz. The 5min readings
     must be stored in a subdirectory 'raw'. Aggregations must be stored in a subdirectory named
     by the aggregation interval (eg H = hourly, 30T = 30min). See example below:
+        
     |-- profiles  
         |-- raw
             |-- unit (eg A)
@@ -77,13 +80,9 @@ def specifyDataDir():
     TABLES DIRECTORY
     ****************
     The data in the tables directory are database tables. Do not rename them after 
-    download. Either a csv or a feather subdirectory is requried. The directory 
-    structure must correspond to:
+    download. The directory structure must correspond to:
     |-- tables
-        |-- csv   
-            |-- ... (eg links.csv)
-        |-- feather
-            |-- ... (eg links.feather)            
+        |-- ... (eg links.csv)       
     """
 
     temp_obs_dir = os.path.join(home_dir,'del_data', 'observations') #default directory for observational data
@@ -128,9 +127,10 @@ class InputError(ValueError):
     """
     Exception raised for errors in the input.
 
-    Attributes:
-    expression -- input expression in which the error occurred
-    message -- explanation of the error
+    *input*
+    -------
+    expression: input expression in which the error occurred
+    message (str): explanation of the error
     """
 
     def __init__(self, expression, message):
@@ -139,7 +139,13 @@ class InputError(ValueError):
         
 def validYears(*args):
     """
-    Checks if year range is valid. Valid years are between 1994 and 2014.
+    This function checks if study was conducted during years specfied. 
+    
+    *input*
+    -------
+    *args (int)
+    
+    Valid arguments are years between 1994 and 2014.
     """
     
     for year in args:
@@ -151,7 +157,12 @@ def validYears(*args):
        
 def writeLog(log_line, file_name):    
     """
-    Adds timestamp column to dataframe, then write dataframe to csv log file. 
+    This function adds a timestamp to a log line and writes it to a log file. 
+    
+    *input*
+    -------
+    log_line (dataframe)
+    file_name (str): directory appended to USER_HOME/del_data/usr/ in which logs will be saved.
     """
     
     #Create log_dir and file to log path
@@ -174,7 +185,17 @@ def writeLog(log_line, file_name):
 def geoMeta():
     """
     This function generates geographic metadata for groups by combining GroupID 
-    Lat, Long co-ords with municipal boundaries dataset.
+    Lat, Long co-ords with a municipal boundaries shapefile.
+    
+    *requirements*
+    ------- 
+    file: package_dir/delprocess/data/geometa/2016_Boundaries_Local/DLR Site coordinates.csv
+    file: package_dir/delprocess/data/geometa/2016_Boundaries_Local/Local_Municipalities_2016.shp
+    file: package_dir/delprocess/data/geometa/2016_Boundaries_Local/Local_Municipalities_2016.dbf
+    file: package_dir/delprocess/data/geometa/2016_Boundaries_Local/Local_Municipalities_2016.shx
+    
+    These files are correctly installed if the package is cloned from github and set up as 
+    described in the README file. 
     """
     # SHP, DBF and SHX files from http://energydata.uct.ac.za/dataset/2016-municipal-boundaries-south-africa
     this_dir = os.path.dirname(__file__)
@@ -196,13 +217,8 @@ def geoMeta():
                 g.append([all_records[j][k] for k in (1, 5, 9)])
                 
     geo_meta = pd.DataFrame(g, columns = ['Province','Municipality','District'])
-    geo_meta.loc[geo_meta.Province == 'GT', 'Province'] = 'GP'
+    geo_meta.loc[geo_meta.Province == 'GT', 'Province'] = 'GP' #fix Gauteng province abbreviation
     
     site_geo = pd.concat([site_ref, geo_meta], axis = 1)
     site_geo = site_geo[['GPSName','Lat','Long','Province','Municipality','District']].drop_duplicates()
     site_geo.to_csv(os.path.join(this_dir,'data', 'geometa', 'site_geo.csv'), index=False)
-
-#if __name__ ==" __main__":
-    #specifyDataDir()
-    #print(rawprofiles_dir, table_dir, fdata_dir)
-    

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Monday 3 December 2018
-
-This package contains commandline calls for the delprocess modules.
-
 @author: Wiebke Toussaint
+
+Command line interface for the delretrieve package.
+
+Updated: 4 May 2019
 """
 
 import optparse
@@ -19,6 +19,7 @@ def list_callback(option, opt, value, parser):
   
 def process_profiles():
     """
+    Resample 5 minute metered electricity readings.
     """
     parser = optparse.OptionParser()
     parser.add_option('-i', '--intervalresample', dest='interval', default='30T', type=str, help='Reduce load profiles to interval')
@@ -48,6 +49,7 @@ def process_profiles():
 
 def process_surveys():
     """
+    Extract features from household surveys as specified in specfile.
     """
 
     parser = optparse.OptionParser()

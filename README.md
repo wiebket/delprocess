@@ -127,7 +127,7 @@ The spec file is a dictionary of lists and dictionaries. It is loaded as a json 
 
 |key | value |
 |---|--- |
-|year_range | _list_ of two strings specifying start and end year, eg. `["2000","2014"]` |
+|year_range | _list_ year range for which specs are valid; must be `["1994", "1999"]` or `["2000","2014"]` |
 |features | _list_ of user-defined variable names, eg. `["fridge_freezer","geyser"]` |
 |searchlist | _list_ of database question search terms, eg. `["fridgefreezerNumber" ,"geyserNumber"]` |
 |transform | _dict_ of simple data transformations such as addition. Keys must be one of the variables in the features list, while the transformation variables must come from searchlist, eg. `{"fridge_freezer" : "x['fridgefreezerNumber'] - x['fridgefreezerBroken']"}` |
