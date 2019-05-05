@@ -1,4 +1,4 @@
-<img src="/delprocess/data/DEL_logo.png" alt="DEL Logo" width="314" height="136.4" align="left" vspace="80" hspace="20" />
+<img src="/delprocess/data/images/DEL_logo.png" alt="DEL Logo" width="314" height="136.4" align="left" vspace="80" hspace="20" />
 
 # South African <br/> Domestic Electrical Load <br/> Data Processing
 
@@ -152,3 +152,10 @@ To create a custome spec file, the following process is recommended:
 
 **NB: Surveys were changed in 2000 and questions vary between the years from 1994 - 1999 and 2000 - 2014. Survey data is thus extracted in two batches and requires two spec files with appropriate search terms matched to the questionaire.** For example, the best search term to retrieve household income for the years 1994 - 1999 is 'income', while for 2000 - 2014 it is 'earn per month'.
 
+## Funding
+This code has been developed by the Energy Research Centre at the University of Cape Town with funding from the South African National Energy Development Initiative under the CESAR programme.
+
+
+ Developed by          	|  Funded by
+:----------------------:|:-------------------------:
+<img src="/delprocess/data/images/erc_logo.jpg" alt="ERC Logo" width="206" height="71" align="left" hspace="20" />   |  <img src="/delprocess/data/images/sanedi_logo.jpg" alt="Sanedi Logo" width="177" height="98" align="left" hspace="20" />
