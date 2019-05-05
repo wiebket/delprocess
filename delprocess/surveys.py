@@ -392,7 +392,7 @@ def generateSociosSetMulti(spec_files, year_start=1994, year_end=2014):
         gg = pd.DataFrame()
         for year in range(year_start, year_end+1):
             try:
-                gg = gg.append(generateSociosSetSingle(year, spec), sort=Trues)
+                gg = gg.append(generateSociosSetSingle(year, spec), sort=True)
             except Exception:
                 ## TODO this should be logged
                 print('Could not extract features for '+str(year)+' with spec '+spec)
