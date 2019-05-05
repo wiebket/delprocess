@@ -1,7 +1,7 @@
 {
 "year_range" : ["2000","2014"],
-"features" : ["monthly_income", "water_access", "roof_material", "wall_material", "cb_size", "floor_area", "years_electrified", "geyser","adults","children","part_time","unemployed","pension"],
-"searchlist" : ["earn per month","external","money from small business","watersource", "roof", "wall", "main switch", "floor area","electricity", "geyserNumber", "geyserBroken","males","part time","unemployed","pension"],
+"features" : ["monthly_income", "water_access", "roof_material", "wall_material", "cb_size", "floor_area", "years_electrified", "adults","children","part_time","unemployed","pension"],
+"searchlist" : ["earn per month","external","money from small business","watersource", "roof", "wall", "main switch", "floor area","electricity", "males","part time","unemployed","pension"],
 "transform": {
 	"monthly_income" : "x['earn per month'] + x['money from small business'] + x['external']",
 	"water_access" : "x['watersource']",
@@ -10,7 +10,6 @@
 	"cb_size" : "x['main switch']",
 	"floor_area" : "x['floor area']",
 	"years_electrified" : "x['electricity']",
-    "geyser" : "x['geyserNumber'] - x['geyserBroken']",
     "adults" : "x['number of males: 16-24'] + x['number of females: 16-24'] + x['number of males: 25 - 34'] + x['number of females: 25-34'] + x['number of males: 35-49'] + x['number of females: 35 - 49'] + x['number of males: 50+']",
     "children" : "x['number of males: <16'] + x['number of females: <16']",
 	"part_time" : "x['head emploed part time'] + x['spouse employed part time'] + x['persons older than 16 years: employed parttime']",

@@ -1,7 +1,7 @@
 {
 "year_range" : ["1994","1999"],
-"features" : ["monthly_income", "water_access", "roof_material", "wall_material", "cb_size", "floor_area", "years_electrified", "geyser","adults","children","part_time","unemployed"],
-"searchlist" : ["income", "watersource", "roof", "wall", "main switch", "floor area", "years", "geyser","males","part time","unemployed"],
+"features" : ["monthly_income", "water_access", "roof_material", "wall_material", "cb_size", "floor_area", "years_electrified","adults","children","part_time","unemployed"],
+"searchlist" : ["income", "watersource", "roof", "wall", "main switch", "floor area", "years","males","part time","unemployed"],
 "transform": {
 	"monthly_income" : "x['income']",
 	"water_access" : "4 - x['watersource']",
