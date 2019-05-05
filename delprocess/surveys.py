@@ -337,6 +337,7 @@ def generateSociosSetSingle(year, spec_file):
     for k, v in transform.items():
         data[k] = data.apply(lambda x: eval(v), axis=1)
         
+    dropcols = [i for i in searchlist if i not in features]
     data.drop(columns = searchlist, inplace=True, axis=1)
             
     # Adjust monthly income for inflation: baselined to 
