@@ -1,7 +1,7 @@
 {
 "year_range" : ["1994","1999"],
-"features" : ["monthly_income", "water_access", "roof_material", "wall_material", "cb_size", "floor_area", "years_electrified"],
-"searchlist" : ["income", "watersource", "roof", "wall", "main switch", "floor area", "years"],
+"features" : ["monthly_income", "water_access", "roof_material", "wall_material", "cb_size", "floor_area", "years_electrified", "geyser","adults","children","part_time","unemployed"],
+"searchlist" : ["income", "watersource", "roof", "wall", "main switch", "floor area", "years", "geyser","males","part time","unemployed"],
 "transform": {
 	"monthly_income" : "x['income']",
 	"water_access" : "4 - x['watersource']",
@@ -9,29 +9,33 @@
 	"wall_material" : "x['wall']+1",
 	"cb_size" : "x['main switch']",
 	"floor_area" : "x['floor area']",
-	"years_electrified" : "x['years']"
+	"years_electrified" : "x['years']",
+	"adults" : "x['males16to24'] + x['females16to24'] + x['males25to34'] + x['females25to34'] + x['males35to49'] + x['females35to49'] + x['malesolder50'] + x['femalesolder50']",
+	"children" : "x['malesyounger16'] + x['femalesyounger16']",
+	"part_time" : "x['headparttime'] + x['spouseparttime'] + x['older16parttime']",
+	"unemployed" : "x['headunemployed'] + x['spouseunemployed'] + x['older16unemployed']"
 	},
 "bins" : {},
 "labels" : {},
 "cut" : {},
 "replace" : {
-    "water_access": {
+    	"water_access": {
 		"1":"nearby river/dam/borehole", 
 		"2":"block/street taps", 
 		"3":"tap in yard", 
 		"4":"tap inside house"
 		},
 	"roof_material": {
-        "1":"IBR/Corr.Iron/Zinc", 
+        	"1":"IBR/Corr.Iron/Zinc", 
         "2":"Thatch/Grass", 
-        "3":"Wood/Masonite board", 
+        	"3":"Wood/Masonite board", 
 		"4":"Brick", 
 		"5":"Blocks", 
 		"6":"Plaster", 
 		"7":"Concrete", 
 		"8":"Tiles", 
-        "9":"Plastic", 
-        "10":"Asbestos", 
+        	"9":"Plastic", 
+        	"10":"Asbestos", 
         "11":"Daub/Mud/Clay"
         	},
 	"wall_material": {
@@ -39,14 +43,14 @@
 		"2":"Thatch/Grass", 
 		"3":"Wood/Masonite board", 
 		"4":"Brick", 
-        "5":"Blocks", 
-        "6":"Plaster", 
+        	"5":"Blocks", 
+        	"6":"Plaster", 
         "7":"Concrete", 
-        "8":"Tiles", 
-        "9":"Plastic", 
+        	"8":"Tiles", 
+        	"9":"Plastic", 
 		"10":"Asbestos", 
 		"11":"Daub/Mud/Clay"
 		}
-	},
+    },
 "geo" : "Municipality"
 }
