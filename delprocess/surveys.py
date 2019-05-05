@@ -330,14 +330,14 @@ def generateSociosSetSingle(year, spec_file):
     data = extractSocios(searchlist, year, col_names=searchlist, geo=geo)
     # Add missing columns dropped during feature extraction
     missing_cols = list(set(searchlist) - set(data.columns))
-    data = data.append(pd.DataFrame(columns=missing_cols))
+    data = data.append(pd.DataFrame(columns=missing_cols), sort=True)
     data['AnswerID'] = data.AnswerID.astype(int)
     data['ProfileID'] = data.ProfileID.astype(int)
 
     for k, v in transform.items():
         data[k] = data.apply(lambda x: eval(v), axis=1)
         
-    data.drop(columns = searchlist, inplace=True)
+    data.drop(columns = searchlist, inplace=True, axis=1)
             
     # Adjust monthly income for inflation: baselined to 
     # Stats SA December 2016 values. Important that this happens here, 

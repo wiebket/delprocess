@@ -10,10 +10,10 @@
 	"cb_size" : "x['main switch']",
 	"floor_area" : "x['floor area']",
 	"years_electrified" : "x['years']",
-	"adults" : "x['males16to24'] + x['females16to24'] + x['males25to34'] + x['females25to34'] + x['males35to49'] + x['females35to49'] + x['malesolder50'] + x['femalesolder50']",
-	"children" : "x['malesyounger16'] + x['femalesyounger16']",
-	"part_time" : "x['headparttime'] + x['spouseparttime'] + x['older16parttime']",
-	"unemployed" : "x['headunemployed'] + x['spouseunemployed'] + x['older16unemployed']"
+	"adults" : "x.fillna(0)['males16to24'] + x.fillna(0)['females16to24'] + x.fillna(0)['males25to34'] + x.fillna(0)['females25to34'] + x.fillna(0)['males35to49'] + x.fillna(0)['females35to49'] + x.fillna(0)['malesolder50'] + x.fillna(0)['femalesolder50']",
+	"children" : "x.fillna(0)['malesyounger16'] + x.fillna(0)['femalesyounger16']",
+	"part_time" : "x.fillna(0)['headparttime'] + x.fillna(0)['spouseparttime'] + x.fillna(0)['older16parttime']",
+	"unemployed" : "x.fillna(0)['headunemployed'] + x.fillna(0)['spouseunemployed'] + x.fillna(0)['older16unemployed']"
 	},
 "bins" : {},
 "labels" : {},
