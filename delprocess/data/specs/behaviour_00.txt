@@ -1,9 +1,8 @@
 {
 "year_range" : ["2000","2014"],
-"features" : ["fridge_freezer_use","geyser_use","heater_use","hotplate_use","iron_use","kettle_use","microwave_use","3_plate_use", "4_plate_use", "washing_machine_use"],
-"searchlist" : ["fridgefreezerUsage", "geyserUsage", "heaterUsage", "hotplateUsage", "ironUsage", "kettleUsage", "microwaveUsage", "3plateUsage", "4plateUsage", "washingMachineUsage"],
+"features" : ["geyser_use","heater_use","hotplate_use","iron_use","kettle_use","microwave_use","3_plate_use", "4_plate_use", "washing_machine_use"],
+"searchlist" : ["geyserUsage", "heaterUsage", "hotplateUsage", "ironUsage", "kettleUsage", "microwaveUsage", "3plateUsage", "4plateUsage", "washingMachineUsage"],
 "transform": {
-    "fridge_freezer_use" : "x['fridgefreezerUsage']",
     "geyser_use" : "x['geyserUsage']",
     "heater_use" : "x['heaterUsage']",
     "hotplate_use" : "x['hotplateUsage']",
@@ -18,12 +17,6 @@
 "labels" : {},
 "cut" : {},
 "replace" : {
-	"fridge_freezer_use": {
-		"0":"never",
-		"1":"monthly",
-		"2":"weekly",
-		"3":"daily"
-	},	
 	"geyser_use": {
 		"0":"never",
 		"1":"monthly",
