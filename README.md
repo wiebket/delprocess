@@ -8,6 +8,7 @@
 This package contains tools to process primary data from the South African Domestic Electric Load (DEL) database. It requires access to csv or feather file hierarchy extracted from the original General_LR4 database produced during the NRS Load Research study. 
 
 **Notes on data access:** 
+
 Data can be accessed and set up as follows:  
 1. From [Data First](www.datafirst.uct.ac.za) at the University of Cape Town (UCT). On site access to the complete 5 minute data is available through their secure server room.   
 2. For those with access to the original SQL database, [delretrieve](https://github.com/wiebket/delretrieve) can be used to retrieve the data and create the file hierarchy for further processing.
