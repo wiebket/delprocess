@@ -17,7 +17,7 @@ import shapefile as shp
 from shapely.geometry import Point
 from shapely.geometry import shape
 
-home_dir = Path.home()
+home_dir = str(Path.home())
 usr_dir = os.path.join(home_dir, 'del_data','usr')
 
 def getDataDir():
