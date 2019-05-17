@@ -12,6 +12,7 @@ import plotly as py
 from plotly.offline import offline
 import plotly.graph_objs as go
 offline.init_notebook_mode(connected=True)
+import colorlover as cl
 
 from .loadprofiles import loadReducedProfiles
 
@@ -80,3 +81,108 @@ def nanAnalysis(year, unit, dir_name, threshold = 0.95):
     offline.iplot(fig)
     
     return 
+
+def createStaticMap(ids_df, mapbox_access_token, text_hover=True, zoom=False, zoom_province=False, annotate=True):
+ 
+    georef = ids_df.groupby(['Province','LocName','Lat','Long']).agg(
+        {'Year':['nunique','min'],'ProfileID':'nunique','AnswerID':'nunique'})
+    georef.columns = ['_'.join(x) for x in georef.columns.ravel()]
+    georef.rename(columns={'ProfileID_nunique':'metered','AnswerID_nunique':'surveyed',
+                          'Year_nunique':'nr_years','Year_min':'start_year'}, inplace=True)
+    georef.sort_values('start_year', inplace=True)
+    georef.reset_index(inplace=True)
+    georef['marker_size'] = round(georef['nr_years']**0.6*6)
+    
+    if text_hover is True:
+        georef['text']=georef['LocName']+'<br>' + 'Site launch: '+georef['start_year'].astype(str)+'<br>' +'Years monitored: '+ georef['nr_years'].astype(str)+'<br>' +'Metered households: '+ georef['metered'].astype(str)+'<br>' +'Surveyed households: '+ georef['surveyed'].astype(str)
+        map_hoverinfo='text'
+        map_mode='markers'
+    else:
+        georef['text']=georef['LocName']
+        map_hoverinfo='none'
+        map_mode='markers+text'
+
+
+    # Set marker colors to reflect start year of location monitoring
+    colors = cl.scales['9']['seq']['YlOrBr'][::-1]+cl.scales['9']['seq']['YlGn'][1::]
+    norm_color = np.linspace(0,1, len(georef.start_year.unique()))
+    color_list = list(zip(norm_color, colors))
+    
+    if zoom_province in georef.Province.unique():
+        zoom_level = zoom*(4.2)
+        map_lat = georef.loc[georef['Province']==zoom_province,'Lat'].mean()
+        map_lon = georef.loc[georef['Province']==zoom_province,'Long'].mean()
+        map_title = 'NRS Load Research Programme Sites in the '+zoom_province+' Province'
+    else:
+        print('No valid zoom_level specified. Showing all sites.')
+        zoom_level = 4.2
+        map_lat = -29.1
+        map_lon = 25
+        map_title='NRS Load Research Programme Sites 1994-2014'
+                           
+    trace=go.Scattermapbox(
+            name='Sites',
+            lat=georef['Lat'],
+            lon=georef['Long'],
+            mode=map_mode,
+            marker=dict(
+                size=georef['marker_size'],
+                color=georef['start_year'],
+                colorscale=color_list,
+                opacity=1,
+                showscale=annotate,
+                colorbar=dict(
+                    lenmode='fraction', len=0.85,
+                    thickness=20,
+                    y=0, yanchor='bottom',
+                    tickmode='linear', tick0=1994, dtick=2,
+                    ticks='inside', ticklen=20,
+                    title='Site launch year'
+                )
+            ),
+            text=georef['text'],
+            textposition='bottom center',
+            hoverinfo=map_hoverinfo,
+            showlegend=False
+        )
+    
+    trace_border=go.Scattermapbox(
+            name='marker size<br>represents<br>years on site',
+            lat=georef['Lat'],
+            lon=georef['Long'],
+            mode='markers',
+            marker=dict(
+                size=georef['marker_size']+1.6,
+                color='black',
+                opacity=1
+            ),
+            hoverinfo='none',
+        )
+
+    figure=go.Figure(
+        data=[trace_border, trace],
+        layout = go.Layout(
+                title=map_title,
+                autosize=False,
+                hovermode='closest',
+                mapbox=dict(
+                    accesstoken=mapbox_access_token,
+                    bearing=0,
+                    center=dict(
+                        lat=map_lat,
+                        lon=map_lon
+                    ),
+                    pitch=0,
+                    zoom=zoom_level,
+                    style='light'
+                ),
+                margin = dict(
+                        l = 10,
+                        r = 10,
+                        t = 50,
+                        b = 30
+                ),
+                showlegend=annotate
+            )
+    )
+    return offline.iplot(figure)
