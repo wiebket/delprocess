@@ -186,3 +186,33 @@ def createStaticMap(ids_df, mapbox_access_token, text_hover=True, zoom=False, zo
             )
     )
     return offline.iplot(figure)
+
+def plotCustomerDist(ids_df, id_filter, **kwargs):
+    ids = ids_df.groupby(['Survey','Year'])[id_filter].nunique()
+    
+    if 'nrslr_col' in kwargs:
+        nrslr_col = kwargs['nrslr_col']
+    else: nrslr_col = 'red'
+    if 'eskomlr_col' in kwargs:
+        eskomlr_col = kwargs['eskomlr_col']
+    else: eskomlr_col = 'blue'
+    
+    nrslr = go.Bar(x = ids['NRS LR'].index,
+                   y = ids['NRS LR'].values,
+                   marker=dict(color=nrslr_col),
+                   name = 'Municipalities')
+
+    eskomlr = go.Bar(x = ids['Eskom LR'].index,
+                    y = ids['Eskom LR'].values,
+                    marker = dict(color=eskomlr_col),
+                    name = 'Eskom')
+   
+    layout = go.Layout(title=kwargs['plot_title']+' from 1994 - 2014',
+                      barmode = 'relative',
+                      xaxis=dict(title='Year', tickvals=list(range(1994,2015))),
+                      yaxis=dict(title=id_filter+' Count', showline=True),
+                      margin=dict(t=70),
+                      height=450, width=850)
+   
+    fig = go.Figure(data=[nrslr, eskomlr], layout=layout)
+    return offline.iplot(fig)
