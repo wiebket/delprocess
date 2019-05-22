@@ -188,6 +188,10 @@ def createStaticMap(ids_df, mapbox_access_token, text_hover=True, zoom=False, zo
     return offline.iplot(figure)
 
 def plotCustomerDist(ids_df, id_filter, **kwargs):
+    
+    year_start = ids_df['Year'].min()
+    year_end = ids_df['Year'].max()
+    
     ids = ids_df.groupby(['Survey','Year'])[id_filter].nunique()
     
     if 'nrslr_col' in kwargs:
@@ -207,12 +211,12 @@ def plotCustomerDist(ids_df, id_filter, **kwargs):
                     marker = dict(color=eskomlr_col),
                     name = 'Eskom')
    
-    layout = go.Layout(title=kwargs['plot_title']+' from 1994 - 2014',
-                      barmode = 'relative',
-                      xaxis=dict(title='Year', tickvals=list(range(1994,2015))),
-                      yaxis=dict(title=id_filter+' Count', showline=True),
-                      margin=dict(t=70),
-                      height=450, width=850)
+    layout = go.Layout(title=kwargs['plot_title']+' from {} - {}'.format(year_start, year_end),
+                    barmode = 'relative',
+                    xaxis=dict(title='Year', tickangle=90, tickvals=list(range(year_start,year_end+1))),
+                    yaxis=dict(title=id_filter+' Count', showline=True),
+                    margin=dict(t=70),
+                    height=450, width=850)
    
     fig = go.Figure(data=[nrslr, eskomlr], layout=layout)
     return offline.iplot(fig)
