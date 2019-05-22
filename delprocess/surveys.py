@@ -472,7 +472,7 @@ def recorderLocations(year):
     """Returns all survey locations and recorder abbreviations for a given year. 
     
     Parameters:
-        year (int): 2009 <= year <= 2014
+        year (int): 2009 <= year <= 2015
     
     Returns:
         pandas dataframe: recorder locations for year

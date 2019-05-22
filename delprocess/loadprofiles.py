@@ -207,7 +207,7 @@ def getProfilePower(year, dir_name='H'):
         power.rename(columns={'RecorderID_v':'RecorderID'}, inplace=True)
     
     # Recorder type is set up so that each current profile has its own voltage profile
-    elif 2009 < year <= 2014: 
+    elif 2009 < year <= 2015:
         vprofile['matchcol'] = vprofile['ProfileID'] + 1
         power_temp = vprofile.merge(iprofile, left_on=['matchcol', 'Datefield'], 
                                     right_on=['ProfileID','Datefield'], suffixes=['_v', '_i'])
@@ -225,7 +225,7 @@ def getProfilePower(year, dir_name='H'):
                                   left_on=['matchcol','Datefield'], suffixes=['_kw','_kva'])
         power.drop(['matchcol'], axis=1, inplace=True)        
     else:
-        return print('Year is out of range. Please select a year between 1994 and 2014')
+        return print('Year is out of range. Please select a year between 1994 and 2015')
     
     power['kw_calculated'] = power.Unitsread_v*power.Unitsread_i*0.001
     power['valid_calculated'] = power.Valid_i * power.Valid_v
