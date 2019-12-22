@@ -75,12 +75,12 @@ Modules: `surveys`, `loadprofiles`, `plotprofiles`
 ### Timeseries data (**DEL M**etering data)
 	
 #### From the command line
-1. Execute `delprocess_profiles -i [interval]` from the command line (equivalent to `saveReducedProfiles()`)
+1. Execute `delprocess_profiles -i [interval]` from the command line (equivalent to `loadprofiles.saveReducedProfiles()`)
 2. _Options_: -s [data start year] and -e [data end year] as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive
 3. _Additional command line options_: `-c or [--csv]`: Format and save output as csv files (default feather)
 
 #### In python
-Run `delprocess.saveReducedProfiles()`
+Run `delprocess.loadprofiles.saveReducedProfiles()`
 
 Additional profile processing methods:
 
