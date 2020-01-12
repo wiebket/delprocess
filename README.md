@@ -154,7 +154,12 @@ To create a custome spec file, the following process is recommended:
 
 **NB: Surveys were changed in 2000 and questions vary between the years from 1994 - 1999 and 2000 - 2014. Survey data is thus extracted in two batches and requires two spec files with appropriate search terms matched to the questionaire.** For example, the best search term to retrieve household income for the years 1994 - 1999 is 'income', while for 2000 - 2014 it is 'earn per month'.
 
-## Funding
+## Acknowledgements
+
+### Citation
+Toussaint, Wiebke. delprocess: Data Processing of the South African Domestic Electrical Load Study, version 1.01. Zenodo. https://zenodo.org/record/3605422 (2019).
+
+### Funding
 This code has been developed by the Energy Research Centre at the University of Cape Town with funding from the South African National Energy Development Initiative under the CESAR programme.
 
 
