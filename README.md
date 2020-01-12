@@ -1,5 +1,5 @@
 <img src="/delprocess/data/images/DEL_logo.png" alt="DEL Logo" width="200" height="150" align="left"/>
-
+<a href="https://zenodo.org/badge/latestdoi/160184911"><img src="https://zenodo.org/badge/160184911.svg" alt="DOI" align="left"></a>
 
 # South African <br/> Domestic Electrical Load Study <br/> Data Processing
 
