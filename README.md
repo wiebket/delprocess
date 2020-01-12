@@ -157,7 +157,7 @@ To create a custome spec file, the following process is recommended:
 ## Acknowledgements
 
 ### Citation
-Toussaint, Wiebke. delprocess: Data Processing of the South African Domestic Electrical Load Study, version 1.01. Zenodo. https://zenodo.org/record/3605422 (2019).
+Toussaint, Wiebke. delprocess: Data Processing of the South African Domestic Electrical Load Study, version 1.01. Zenodo. https://doi.org/10.5281/zenodo.3605422 (2019).
 
 ### Funding
 This code has been developed by the Energy Research Centre at the University of Cape Town with funding from the South African National Energy Development Initiative under the CESAR programme.
