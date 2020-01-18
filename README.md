@@ -76,7 +76,7 @@ Modules: `surveys`, `loadprofiles`, `plotprofiles`
 	
 #### From the command line
 1. Execute `delprocess_profiles -i [interval]` from the command line (equivalent to `loadprofiles.saveReducedProfiles()`)
-2. _Options_: -s [data start year] and -e [data end year] as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive
+2. _Options_: `-s [data start year]` and `-e [data end year]` as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive
 3. _Additional command line options_: `-c or [--csv]`: Format and save output as csv files (default feather)
 
 #### In python
@@ -103,7 +103,7 @@ If you know what survey data you want for your analysis, it is easiest to extrac
 
 1. Create a pair of spec files `*_94.txt` and `*_00.txt` with your specifications
 2. Execute `delprocess_surveys -f [filename]` (equivalent to running `genS()`)
-3. _Options_: -s [data start year] and -e [data end year] as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive.
+3. _Options_: `-s [data start year]` and `-e [data end year]` as optional arguments: if omitted you will be prompted to add them on the command line. Must be between 1994 and 2014 inclusive.
 
 #### In python
 Import the package to use the following functions:
