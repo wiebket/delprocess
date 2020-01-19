@@ -44,7 +44,7 @@ delprocess
 ```
 
 ## Setup instructions
-Ensure that python 3 is installed on your computer. A simple way of getting it is to install it with [Anaconda](https://conda.io/docs/user-guide/install/index.html). Once python has been installed, the delprocess package can be installed.
+Ensure that python 3 is installed on your computer. A simple way of getting it is to install it with [Anaconda](https://docs.anaconda.com/anaconda/install/). Once python has been installed, the delprocess package can be installed.
 	
 1. Clone this repository from github.
 2. Navigate to the root directory (`delprocess`) and run `python setup.py install` (run from Anaconda Prompt or other bash with access to python if running on Windows).
