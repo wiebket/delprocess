@@ -37,9 +37,9 @@ def loadRawProfiles(year, month, unit):
     
     for p in filepath:
         try:
-            data = feather.read_dataframe(p)
+            data = pd.read_csv(p, parse_dates=['Datefield'], low_memory=False)  
         except:
-            data = pd.read_csv(p, parse_dates=['Datefield'], low_memory=False)         
+            data = feather.read_dataframe(p)      
         ts = ts.append(data)
         del data
 
@@ -79,10 +79,10 @@ def reduceRawProfiles(year, unit, interval):
     for child in os.listdir(p):
         childpath = os.path.join(p, child)
         try:
-            data = feather.read_dataframe(childpath)
-        except:
             data = pd.read_csv(childpath, parse_dates=['Datefield'], 
                                low_memory=False)
+        except:
+            data = feather.read_dataframe(childpath)
         if len(data)>0:
             print('Data loaded for {}'.format(child))    
             # Format data
@@ -118,7 +118,7 @@ def reduceRawProfiles(year, unit, interval):
         return aggts
 
 
-def saveReducedProfiles(year, interval, filetype='feather'):
+def saveReducedProfiles(year, interval, filetype='csv'):
     """Iterates through profile units, reduces all profiles with 
     reduceRawProfiles() and saves the result as a feather object in a directory tree.
     
@@ -169,9 +169,9 @@ def loadReducedProfiles(year, unit, interval):
             saveReducedProfiles(year, interval)
    
     try:
-        data = feather.read_dataframe(file_path)
+        data = pd.read_csv(file_path) 
     except:
-        data = pd.read_csv(file_path)               
+        data = feather.read_dataframe(file_path)              
 
     data.drop_duplicates(inplace=True)
     
