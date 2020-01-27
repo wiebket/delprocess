@@ -23,8 +23,8 @@ def process_profiles():
     """
     parser = optparse.OptionParser()
     parser.add_option('-i', '--intervalresample', dest='interval', default='30T', type=str, help='Reduce load profiles to interval')
-    parser.add_option('-y', '--startyear', dest='startyear', type=int, help='Data start year')
-    parser.add_option('-z', '--endyear', dest='endyear', type=int, help='Data end year')
+    parser.add_option('-s', '--startyear', dest='startyear', type=int, help='Data start year')
+    parser.add_option('-e', '--endyear', dest='endyear', type=int, help='Data end year')
     parser.add_option('-c', '--csv', action='store_true', dest='csv', help='Format and save output as csv files')
     parser.set_defaults(csv=False)
 
