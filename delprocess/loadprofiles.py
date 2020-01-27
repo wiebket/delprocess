@@ -135,6 +135,7 @@ def saveReducedProfiles(year, interval, filetype='csv'):
             #write to reduced data to file            
             try:
                 if filetype=='feather':
+                    ts['RecorderID']=ts['RecorderID'].astype(str)
                     feather.write_dataframe(ts, wpath)
                 elif filetype=='csv':
                     ts.to_csv(wpath, index=False)
@@ -142,9 +143,7 @@ def saveReducedProfiles(year, interval, filetype='csv'):
             except Exception as e:
                 print(e)
                 pass
-                	#logline = [yearstart, yearend, interval]
-				#log_lines = pd.DataFrame([logline], columns = ['from_year','to_year', 'resample_interval'])
-				#writeLog(log_lines,'log_reduce_profiles')
+
             del ts #clear memory
         except FileNotFoundError as e:
             print(e)
