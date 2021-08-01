@@ -12,7 +12,7 @@ This package contains tools to process primary data from the South African Domes
 Data can be accessed and set up as follows:  
 1. From [Data First](https://datafirst.uct.ac.za/) at the University of Cape Town (UCT). On site access to the complete 5 minute data is available through their secure server room.   
 2. For those with access to the original SQL database, [delretrieve](https://github.com/wiebket/delretrieve) can be used to retrieve the data and create the file hierarchy for further processing.
-3. Several datasets with aggregated views are available [online](https://www.datafirst.uct.ac.za/dataportal/index.php/catalog/DELS/about) and can be accessed for academic purposes. If you use them, you will *not* need to install this package. 
+3. Several datasets with aggregated views are available [online](https://www.datafirst.uct.ac.za/dataportal/index.php/catalog/NRSLR/about) and can be accessed for academic purposes. If you use them, you will *not* need to install this package. 
 
 ## Package structure
 
